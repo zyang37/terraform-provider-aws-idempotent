@@ -1,0 +1,5 @@
+# Sites the codemod must not rewrite. Format: <path from provider root>:<GoField>
+#
+# EFS creation_token is a user-facing, state-stored attribute; changing its
+# default would force replacement of existing file systems.
+internal/service/efs/file_system.go:CreationToken
