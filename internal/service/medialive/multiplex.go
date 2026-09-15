@@ -21,6 +21,7 @@ import (
 	"github.com/hashicorp/terraform-provider-aws/internal/create"
 	"github.com/hashicorp/terraform-provider-aws/internal/enum"
 	"github.com/hashicorp/terraform-provider-aws/internal/flex"
+	"github.com/hashicorp/terraform-provider-aws/internal/idempotency"
 	"github.com/hashicorp/terraform-provider-aws/internal/retry"
 	tftags "github.com/hashicorp/terraform-provider-aws/internal/tags"
 	"github.com/hashicorp/terraform-provider-aws/internal/tfresource"
@@ -115,7 +116,7 @@ func resourceMultiplexCreate(ctx context.Context, d *schema.ResourceData, meta a
 	conn := meta.(*conns.AWSClient).MediaLiveClient(ctx)
 
 	in := &medialive.CreateMultiplexInput{
-		RequestId:         aws.String(create.UniqueId(ctx)),
+		RequestId:         aws.String(idempotency.AutoToken),
 		Name:              aws.String(d.Get(names.AttrName).(string)),
 		AvailabilityZones: flex.ExpandStringValueList(d.Get(names.AttrAvailabilityZones).([]any)),
 		Tags:              getTagsIn(ctx),

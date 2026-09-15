@@ -20,6 +20,7 @@ import (
 	"github.com/hashicorp/terraform-provider-aws/internal/conns"
 	"github.com/hashicorp/terraform-provider-aws/internal/create"
 	"github.com/hashicorp/terraform-provider-aws/internal/flex"
+	"github.com/hashicorp/terraform-provider-aws/internal/idempotency"
 	"github.com/hashicorp/terraform-provider-aws/internal/retry"
 	tftags "github.com/hashicorp/terraform-provider-aws/internal/tags"
 	"github.com/hashicorp/terraform-provider-aws/internal/tfresource"
@@ -96,7 +97,7 @@ func resourceKxDatabaseCreate(ctx context.Context, d *schema.ResourceData, meta 
 	in := &finspace.CreateKxDatabaseInput{
 		DatabaseName:  aws.String(d.Get(names.AttrName).(string)),
 		EnvironmentId: aws.String(d.Get("environment_id").(string)),
-		ClientToken:   aws.String(create.UniqueId(ctx)),
+		ClientToken:   aws.String(idempotency.AutoToken),
 		Tags:          getTagsIn(ctx),
 	}
 

@@ -17,10 +17,10 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 	"github.com/hashicorp/terraform-provider-aws/internal/conns"
-	"github.com/hashicorp/terraform-provider-aws/internal/create"
 	"github.com/hashicorp/terraform-provider-aws/internal/enum"
 	"github.com/hashicorp/terraform-provider-aws/internal/errs"
 	"github.com/hashicorp/terraform-provider-aws/internal/errs/sdkdiag"
+	"github.com/hashicorp/terraform-provider-aws/internal/idempotency"
 	"github.com/hashicorp/terraform-provider-aws/internal/retry"
 	"github.com/hashicorp/terraform-provider-aws/internal/tfresource"
 	"github.com/hashicorp/terraform-provider-aws/names"
@@ -97,7 +97,7 @@ func resourceListenerCreate(ctx context.Context, d *schema.ResourceData, meta an
 	input := &globalaccelerator.CreateListenerInput{
 		AcceleratorArn:   aws.String(acceleratorARN),
 		ClientAffinity:   awstypes.ClientAffinity(d.Get("client_affinity").(string)),
-		IdempotencyToken: aws.String(create.UniqueId(ctx)),
+		IdempotencyToken: aws.String(idempotency.AutoToken),
 		PortRanges:       expandPortRanges(d.Get("port_range").(*schema.Set).List()),
 		Protocol:         awstypes.Protocol(d.Get(names.AttrProtocol).(string)),
 	}

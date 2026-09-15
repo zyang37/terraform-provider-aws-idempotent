@@ -31,7 +31,6 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
-	"github.com/hashicorp/terraform-provider-aws/internal/create"
 	"github.com/hashicorp/terraform-provider-aws/internal/enum"
 	"github.com/hashicorp/terraform-provider-aws/internal/errs"
 	"github.com/hashicorp/terraform-provider-aws/internal/errs/fwdiag"
@@ -39,6 +38,7 @@ import (
 	fwflex "github.com/hashicorp/terraform-provider-aws/internal/framework/flex"
 	fwtypes "github.com/hashicorp/terraform-provider-aws/internal/framework/types"
 	tfboolvalidator "github.com/hashicorp/terraform-provider-aws/internal/framework/validators/boolvalidator"
+	"github.com/hashicorp/terraform-provider-aws/internal/idempotency"
 	"github.com/hashicorp/terraform-provider-aws/internal/retry"
 	"github.com/hashicorp/terraform-provider-aws/internal/smerr"
 	tftags "github.com/hashicorp/terraform-provider-aws/internal/tags"
@@ -217,7 +217,7 @@ func (r *poolResource) Create(ctx context.Context, req resource.CreateRequest, r
 	seed, extras := identities[0], identities[1:]
 
 	input := pinpointsmsvoicev2.CreatePoolInput{
-		ClientToken:         aws.String(create.UniqueId(ctx)),
+		ClientToken:         aws.String(idempotency.AutoToken),
 		OriginationIdentity: aws.String(seed),
 		Tags:                getTagsIn(ctx),
 	}
@@ -788,7 +788,7 @@ func validateSenderIdentity(identityARN string, s awstypes.SenderIdInformation, 
 func associateOriginationIdentities(ctx context.Context, conn *pinpointsmsvoicev2.Client, poolID string, isoCountryCode *string, identities ...string) error {
 	for _, identity := range identities {
 		input := pinpointsmsvoicev2.AssociateOriginationIdentityInput{
-			ClientToken:         aws.String(create.UniqueId(ctx)),
+			ClientToken:         aws.String(idempotency.AutoToken),
 			PoolId:              aws.String(poolID),
 			OriginationIdentity: aws.String(identity),
 			IsoCountryCode:      isoCountryCode,
@@ -811,7 +811,7 @@ func associateOriginationIdentities(ctx context.Context, conn *pinpointsmsvoicev
 func disassociateOriginationIdentities(ctx context.Context, conn *pinpointsmsvoicev2.Client, poolID string, isoCountryCode *string, identities ...string) error {
 	for _, identity := range identities {
 		input := pinpointsmsvoicev2.DisassociateOriginationIdentityInput{
-			ClientToken:         aws.String(create.UniqueId(ctx)),
+			ClientToken:         aws.String(idempotency.AutoToken),
 			PoolId:              aws.String(poolID),
 			OriginationIdentity: aws.String(identity),
 			IsoCountryCode:      isoCountryCode,

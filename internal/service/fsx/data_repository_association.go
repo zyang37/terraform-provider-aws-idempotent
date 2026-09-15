@@ -19,11 +19,11 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 	"github.com/hashicorp/terraform-provider-aws/internal/conns"
-	"github.com/hashicorp/terraform-provider-aws/internal/create"
 	"github.com/hashicorp/terraform-provider-aws/internal/enum"
 	"github.com/hashicorp/terraform-provider-aws/internal/errs"
 	"github.com/hashicorp/terraform-provider-aws/internal/errs/sdkdiag"
 	"github.com/hashicorp/terraform-provider-aws/internal/flex"
+	"github.com/hashicorp/terraform-provider-aws/internal/idempotency"
 	"github.com/hashicorp/terraform-provider-aws/internal/retry"
 	tfslices "github.com/hashicorp/terraform-provider-aws/internal/slices"
 	tftags "github.com/hashicorp/terraform-provider-aws/internal/tags"
@@ -167,7 +167,7 @@ func resourceDataRepositoryAssociationCreate(ctx context.Context, d *schema.Reso
 	conn := meta.(*conns.AWSClient).FSxClient(ctx)
 
 	input := &fsx.CreateDataRepositoryAssociationInput{
-		ClientRequestToken: aws.String(create.UniqueId(ctx)),
+		ClientRequestToken: aws.String(idempotency.AutoToken),
 		DataRepositoryPath: aws.String(d.Get("data_repository_path").(string)),
 		FileSystemId:       aws.String(d.Get(names.AttrFileSystemID).(string)),
 		FileSystemPath:     aws.String(d.Get("file_system_path").(string)),
@@ -239,7 +239,7 @@ func resourceDataRepositoryAssociationUpdate(ctx context.Context, d *schema.Reso
 	if d.HasChangesExcept(names.AttrTags, names.AttrTagsAll) {
 		input := &fsx.UpdateDataRepositoryAssociationInput{
 			AssociationId:      aws.String(d.Id()),
-			ClientRequestToken: aws.String(create.UniqueId(ctx)),
+			ClientRequestToken: aws.String(idempotency.AutoToken),
 		}
 
 		if d.HasChange("imported_file_chunk_size") {
@@ -270,7 +270,7 @@ func resourceDataRepositoryAssociationDelete(ctx context.Context, d *schema.Reso
 
 	request := &fsx.DeleteDataRepositoryAssociationInput{
 		AssociationId:          aws.String(d.Id()),
-		ClientRequestToken:     aws.String(create.UniqueId(ctx)),
+		ClientRequestToken:     aws.String(idempotency.AutoToken),
 		DeleteDataInFileSystem: aws.Bool(d.Get("delete_data_in_filesystem").(bool)),
 	}
 

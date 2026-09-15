@@ -1,7 +1,10 @@
 # terraform-provider-aws-idempotent: Development Plan
 
-Status: draft, 2026-09-15. Baseline: `hashicorp/terraform-provider-aws` **v6.64.0**
-(Go 1.26.6, `aws-sdk-go-v2` v1.46.0).
+Status: **phases 0-3 implemented**, 2026-09-15. Baseline: `hashicorp/terraform-provider-aws`
+**v6.64.0** (Go 1.26.6, `aws-sdk-go-v2` v1.46.0). See the "Implementation status"
+note after section 6 for exactly what exists in this checkout today versus what
+remains (phases 4-6: crash-recovery e2e against a real Terraform CLI, real-AWS
+acceptance tests, and packaging/release).
 
 ## 1. Goal
 
@@ -214,6 +217,53 @@ provider "aws" {
 | `route53/delegation_set.go`, `route53/health_check.go` | `callerRef` is reused. Use the same helper. |
 | `athena/named_query.go` `NamedQueryId`, `cloudcontrol/resource.go` `RequestToken` | False positives, because these are real IDs. No change. `NameIsToken=false` or read-only handling already skips them at runtime. |
 | `efs/file_system.go` `CreationToken` | Excluded. It is a user-visible attribute stored in state. |
+
+## Implementation status (2026-09-15)
+
+Phases 0-3 are implemented in this checkout, not just planned:
+
+- **Phase 0** — upstream v6.64.0 imported verbatim as the fork baseline (a
+  separate commit from every change below, so the diff is reviewable).
+- **Phase 1** — `internal/idempotency` and `internal/idempotency/journal`:
+  the SQLite journal (crash-safety proven with a real subprocess that is
+  SIGKILLed mid-claim, and with 8 real concurrent processes racing for one
+  key), the canonical hasher (fuzzed 7M+ executions, no panics), and the
+  token-format table, cross-checked against every operation's real Smithy
+  constraints.
+- **Phase 2** — the two aws-sdk-go-v2 middleware (`idempotency.Middleware`),
+  verified against real `ec2`/`ecs` clients hitting a fake HTTP endpoint:
+  the deterministic token reaches the wire instead of a random one, a
+  caller-supplied token passes through untouched, and the SDK's retry loop
+  reuses one token across every HTTP attempt.
+- **Phase 3** — provider integration:
+  - `tools/codemod-tokens` applied to this checkout: 428 sites across 298
+    files rewritten from a random per-apply token to the `idempotency.AutoToken`
+    sentinel.
+  - `internal/idempotency/server.go`'s `WrapProviderServer` (the gRPC
+    "wrapper A" from section 4.2) wired into `main.go`, promoting/releasing
+    journal entries around every `ApplyResourceChange` call. This is load
+    -bearing, not an optimization -- see its doc comment -- and is tested
+    with a fake `tfprotov5.ProviderServer`.
+  - `internal/idempotency.Middleware` wired into every AWS client via
+    `internal/conns/config.go`, next to the existing `apicall.Middleware()`
+    registration.
+  - `go build ./...` and `go vet ./...` succeed for the entire ~300-service
+    provider with all of the above in place.
+  - The 10 MANUAL codemod sites (table above) are **not yet fixed**: they
+    still use upstream's original random per-apply token, which is no
+    regression (identical to upstream behavior) but not yet improved.
+  - **Not yet implemented**: the `idempotency {}` provider config block
+    (journal path/retention are environment-variable-only for now --
+    `TF_AWS_IDEMPOTENCY_JOURNAL`, `TF_AWS_IDEMPOTENCY_DISABLE`, see
+    `internal/idempotency/global.go`), the `journal` CLI subcommand, and GC
+    scheduling (`journal.Store.GC`/`Orphans` exist and are tested, but
+    nothing calls them yet).
+- **Phases 4-6** (crash-recovery against a real `terraform` CLI + AWS
+  emulator, real-AWS sandbox acceptance tests, packaging/release) are
+  **not started**. The journal-level crash recovery those phases would
+  exercise end-to-end is already proven at the unit level (see phase 1
+  above); what phase 4 adds is proof through the actual Terraform CLI and
+  provider RPC boundary, which no test in this checkout exercises yet.
 
 ## 7. Known limitations (state these in the README)
 

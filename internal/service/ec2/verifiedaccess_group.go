@@ -16,8 +16,8 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-provider-aws/internal/conns"
-	"github.com/hashicorp/terraform-provider-aws/internal/create"
 	"github.com/hashicorp/terraform-provider-aws/internal/errs/sdkdiag"
+	"github.com/hashicorp/terraform-provider-aws/internal/idempotency"
 	"github.com/hashicorp/terraform-provider-aws/internal/retry"
 	tftags "github.com/hashicorp/terraform-provider-aws/internal/tags"
 	"github.com/hashicorp/terraform-provider-aws/internal/verify"
@@ -108,7 +108,7 @@ func resourceVerifiedAccessGroupCreate(ctx context.Context, d *schema.ResourceDa
 	conn := meta.(*conns.AWSClient).EC2Client(ctx)
 
 	input := &ec2.CreateVerifiedAccessGroupInput{
-		ClientToken:              aws.String(create.UniqueId(ctx)),
+		ClientToken:              aws.String(idempotency.AutoToken),
 		TagSpecifications:        getTagSpecificationsIn(ctx, awstypes.ResourceTypeVerifiedAccessGroup),
 		VerifiedAccessInstanceId: aws.String(d.Get("verifiedaccess_instance_id").(string)),
 	}
@@ -187,7 +187,7 @@ func resourceVerifiedAccessGroupUpdate(ctx context.Context, d *schema.ResourceDa
 
 	if d.HasChangesExcept("policy_document", names.AttrTags, names.AttrTagsAll, "sse_configuration") {
 		input := &ec2.ModifyVerifiedAccessGroupInput{
-			ClientToken:           aws.String(create.UniqueId(ctx)),
+			ClientToken:           aws.String(idempotency.AutoToken),
 			VerifiedAccessGroupId: aws.String(d.Id()),
 		}
 
@@ -245,7 +245,7 @@ func resourceVerifiedAccessGroupDelete(ctx context.Context, d *schema.ResourceDa
 
 	log.Printf("[INFO] Deleting Verified Access Group: %s", d.Id())
 	input := ec2.DeleteVerifiedAccessGroupInput{
-		ClientToken:           aws.String(create.UniqueId(ctx)),
+		ClientToken:           aws.String(idempotency.AutoToken),
 		VerifiedAccessGroupId: aws.String(d.Id()),
 	}
 	_, err := conn.DeleteVerifiedAccessGroup(ctx, &input)

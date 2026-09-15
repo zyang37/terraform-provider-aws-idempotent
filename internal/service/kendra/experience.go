@@ -22,9 +22,9 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 	"github.com/hashicorp/terraform-provider-aws/internal/conns"
-	"github.com/hashicorp/terraform-provider-aws/internal/create"
 	"github.com/hashicorp/terraform-provider-aws/internal/enum"
 	"github.com/hashicorp/terraform-provider-aws/internal/errs/sdkdiag"
+	"github.com/hashicorp/terraform-provider-aws/internal/idempotency"
 	"github.com/hashicorp/terraform-provider-aws/internal/retry"
 	"github.com/hashicorp/terraform-provider-aws/internal/tfresource"
 	"github.com/hashicorp/terraform-provider-aws/internal/verify"
@@ -188,7 +188,7 @@ func resourceExperienceCreate(ctx context.Context, d *schema.ResourceData, meta 
 	conn := meta.(*conns.AWSClient).KendraClient(ctx)
 
 	in := &kendra.CreateExperienceInput{
-		ClientToken: aws.String(create.UniqueId(ctx)),
+		ClientToken: aws.String(idempotency.AutoToken),
 		IndexId:     aws.String(d.Get("index_id").(string)),
 		Name:        aws.String(d.Get(names.AttrName).(string)),
 		RoleArn:     aws.String(d.Get(names.AttrRoleARN).(string)),

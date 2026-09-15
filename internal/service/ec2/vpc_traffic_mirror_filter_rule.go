@@ -19,9 +19,9 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 	"github.com/hashicorp/terraform-provider-aws/internal/conns"
-	"github.com/hashicorp/terraform-provider-aws/internal/create"
 	"github.com/hashicorp/terraform-provider-aws/internal/enum"
 	"github.com/hashicorp/terraform-provider-aws/internal/errs/sdkdiag"
+	"github.com/hashicorp/terraform-provider-aws/internal/idempotency"
 	"github.com/hashicorp/terraform-provider-aws/internal/retry"
 	"github.com/hashicorp/terraform-provider-aws/internal/verify"
 	"github.com/hashicorp/terraform-provider-aws/names"
@@ -130,7 +130,7 @@ func resourceTrafficMirrorFilterRuleCreate(ctx context.Context, d *schema.Resour
 	conn := meta.(*conns.AWSClient).EC2Client(ctx)
 
 	input := &ec2.CreateTrafficMirrorFilterRuleInput{
-		ClientToken:           aws.String(create.UniqueId(ctx)),
+		ClientToken:           aws.String(idempotency.AutoToken),
 		DestinationCidrBlock:  aws.String(d.Get("destination_cidr_block").(string)),
 		RuleAction:            awstypes.TrafficMirrorRuleAction(d.Get("rule_action").(string)),
 		RuleNumber:            aws.Int32(int32(d.Get("rule_number").(int))),

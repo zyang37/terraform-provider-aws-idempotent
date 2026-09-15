@@ -28,6 +28,7 @@ import (
 	"github.com/hashicorp/terraform-provider-aws/internal/framework"
 	fwflex "github.com/hashicorp/terraform-provider-aws/internal/framework/flex"
 	fwtypes "github.com/hashicorp/terraform-provider-aws/internal/framework/types"
+	"github.com/hashicorp/terraform-provider-aws/internal/idempotency"
 	"github.com/hashicorp/terraform-provider-aws/internal/retry"
 	"github.com/hashicorp/terraform-provider-aws/internal/tfresource"
 	"github.com/hashicorp/terraform-provider-aws/names"
@@ -227,7 +228,7 @@ func (r *policyResource) Create(ctx context.Context, req resource.CreateRequest,
 
 	in := &verifiedpermissions.CreatePolicyInput{}
 
-	in.ClientToken = aws.String(create.UniqueId(ctx))
+	in.ClientToken = aws.String(idempotency.AutoToken)
 	in.PolicyStoreId = plan.PolicyStoreID.ValueStringPointer()
 
 	def, diags := plan.Definition.ToPtr(ctx)

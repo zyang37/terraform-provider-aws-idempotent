@@ -21,10 +21,10 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/structure"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 	"github.com/hashicorp/terraform-provider-aws/internal/conns"
-	"github.com/hashicorp/terraform-provider-aws/internal/create"
 	"github.com/hashicorp/terraform-provider-aws/internal/enum"
 	"github.com/hashicorp/terraform-provider-aws/internal/errs"
 	"github.com/hashicorp/terraform-provider-aws/internal/errs/sdkdiag"
+	"github.com/hashicorp/terraform-provider-aws/internal/idempotency"
 	"github.com/hashicorp/terraform-provider-aws/internal/retry"
 	tftags "github.com/hashicorp/terraform-provider-aws/internal/tags"
 	"github.com/hashicorp/terraform-provider-aws/internal/tfresource"
@@ -175,7 +175,7 @@ func resourceCoreNetworkCreate(ctx context.Context, d *schema.ResourceData, meta
 
 	globalNetworkID := d.Get("global_network_id").(string)
 	input := networkmanager.CreateCoreNetworkInput{
-		ClientToken:     aws.String(create.UniqueId(ctx)),
+		ClientToken:     aws.String(idempotency.AutoToken),
 		GlobalNetworkId: aws.String(globalNetworkID),
 		Tags:            getTagsIn(ctx),
 	}
@@ -536,7 +536,7 @@ func putAndExecuteCoreNetworkPolicy(ctx context.Context, conn *networkmanager.Cl
 	}
 
 	inputPCNP := networkmanager.PutCoreNetworkPolicyInput{
-		ClientToken:    aws.String(create.UniqueId(ctx)),
+		ClientToken:    aws.String(idempotency.AutoToken),
 		CoreNetworkId:  aws.String(coreNetworkID),
 		PolicyDocument: aws.String(document),
 	}

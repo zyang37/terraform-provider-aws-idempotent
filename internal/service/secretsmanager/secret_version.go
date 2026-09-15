@@ -18,10 +18,10 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-provider-aws/internal/conns"
-	"github.com/hashicorp/terraform-provider-aws/internal/create"
 	"github.com/hashicorp/terraform-provider-aws/internal/errs"
 	"github.com/hashicorp/terraform-provider-aws/internal/errs/sdkdiag"
 	"github.com/hashicorp/terraform-provider-aws/internal/flex"
+	"github.com/hashicorp/terraform-provider-aws/internal/idempotency"
 	"github.com/hashicorp/terraform-provider-aws/internal/retry"
 	"github.com/hashicorp/terraform-provider-aws/internal/sdkv2"
 	"github.com/hashicorp/terraform-provider-aws/internal/tfresource"
@@ -121,7 +121,7 @@ func resourceSecretVersionCreate(ctx context.Context, d *schema.ResourceData, me
 
 	secretID := d.Get("secret_id").(string)
 	input := &secretsmanager.PutSecretValueInput{
-		ClientRequestToken: aws.String(create.UniqueId(ctx)), // Needed because we're handling our own retries
+		ClientRequestToken: aws.String(idempotency.AutoToken), // Needed because we're handling our own retries
 		SecretId:           aws.String(secretID),
 	}
 

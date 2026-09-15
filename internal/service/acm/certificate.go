@@ -23,7 +23,6 @@ import (
 	"github.com/hashicorp/go-cty/cty"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/customdiff"
-	sdkid "github.com/hashicorp/terraform-plugin-sdk/v2/helper/id"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 	"github.com/hashicorp/terraform-provider-aws/internal/conns"
@@ -32,6 +31,7 @@ import (
 	"github.com/hashicorp/terraform-provider-aws/internal/errs"
 	"github.com/hashicorp/terraform-provider-aws/internal/errs/sdkdiag"
 	"github.com/hashicorp/terraform-provider-aws/internal/flex"
+	"github.com/hashicorp/terraform-provider-aws/internal/idempotency"
 	"github.com/hashicorp/terraform-provider-aws/internal/retry"
 	sdktypes "github.com/hashicorp/terraform-provider-aws/internal/sdkv2/types"
 	tftags "github.com/hashicorp/terraform-provider-aws/internal/tags"
@@ -405,7 +405,7 @@ func resourceCertificateCreate(ctx context.Context, d *schema.ResourceData, meta
 		domainName := d.Get(names.AttrDomainName).(string)
 		input := acm.RequestCertificateInput{
 			DomainName:       aws.String(domainName),
-			IdempotencyToken: aws.String(sdkid.PrefixedUniqueId("tf")), // 32 character limit
+			IdempotencyToken: aws.String(idempotency.AutoToken), // 32 character limit
 			Tags:             getTagsIn(ctx),
 		}
 

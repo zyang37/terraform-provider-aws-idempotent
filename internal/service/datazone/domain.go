@@ -23,12 +23,12 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
-	"github.com/hashicorp/terraform-provider-aws/internal/create"
 	"github.com/hashicorp/terraform-provider-aws/internal/enum"
 	"github.com/hashicorp/terraform-provider-aws/internal/errs/fwdiag"
 	"github.com/hashicorp/terraform-provider-aws/internal/framework"
 	fwflex "github.com/hashicorp/terraform-provider-aws/internal/framework/flex"
 	fwtypes "github.com/hashicorp/terraform-provider-aws/internal/framework/types"
+	"github.com/hashicorp/terraform-provider-aws/internal/idempotency"
 	"github.com/hashicorp/terraform-provider-aws/internal/retry"
 	"github.com/hashicorp/terraform-provider-aws/internal/smerr"
 	tftags "github.com/hashicorp/terraform-provider-aws/internal/tags"
@@ -169,7 +169,7 @@ func (r *domainResource) Create(ctx context.Context, request resource.CreateRequ
 	}
 
 	// Additional fields.
-	input.ClientToken = aws.String(create.UniqueId(ctx))
+	input.ClientToken = aws.String(idempotency.AutoToken)
 	input.Tags = getTagsIn(ctx)
 
 	const (
@@ -275,7 +275,7 @@ func (r *domainResource) Update(ctx context.Context, request resource.UpdateRequ
 		}
 
 		// Additional fields.
-		input.ClientToken = aws.String(create.UniqueId(ctx))
+		input.ClientToken = aws.String(idempotency.AutoToken)
 		input.Identifier = fwflex.StringFromFramework(ctx, new.ID)
 
 		_, err := conn.UpdateDomain(ctx, &input)
@@ -299,7 +299,7 @@ func (r *domainResource) Delete(ctx context.Context, request resource.DeleteRequ
 	conn := r.Meta().DataZoneClient(ctx)
 
 	input := datazone.DeleteDomainInput{
-		ClientToken: aws.String(create.UniqueId(ctx)),
+		ClientToken: aws.String(idempotency.AutoToken),
 		Identifier:  data.ID.ValueStringPointer(),
 	}
 	if !data.SkipDeletionCheck.IsNull() {

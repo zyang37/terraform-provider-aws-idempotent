@@ -17,10 +17,10 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 	"github.com/hashicorp/terraform-provider-aws/internal/conns"
-	"github.com/hashicorp/terraform-provider-aws/internal/create"
 	"github.com/hashicorp/terraform-provider-aws/internal/errs"
 	"github.com/hashicorp/terraform-provider-aws/internal/errs/sdkdiag"
 	"github.com/hashicorp/terraform-provider-aws/internal/flex"
+	"github.com/hashicorp/terraform-provider-aws/internal/idempotency"
 	"github.com/hashicorp/terraform-provider-aws/internal/retry"
 	tftags "github.com/hashicorp/terraform-provider-aws/internal/tags"
 	"github.com/hashicorp/terraform-provider-aws/internal/tfresource"
@@ -158,7 +158,7 @@ func resourceFrameworkCreate(ctx context.Context, d *schema.ResourceData, meta a
 		FrameworkControls: expandFrameworkControls(ctx, d.Get("control").(*schema.Set).List()),
 		FrameworkName:     aws.String(name),
 		FrameworkTags:     getTagsIn(ctx),
-		IdempotencyToken:  aws.String(create.UniqueId(ctx)),
+		IdempotencyToken:  aws.String(idempotency.AutoToken),
 	}
 
 	if v, ok := d.GetOk(names.AttrDescription); ok {
@@ -218,7 +218,7 @@ func resourceFrameworkUpdate(ctx context.Context, d *schema.ResourceData, meta a
 			FrameworkControls:    expandFrameworkControls(ctx, d.Get("control").(*schema.Set).List()),
 			FrameworkDescription: aws.String(d.Get(names.AttrDescription).(string)),
 			FrameworkName:        aws.String(d.Id()),
-			IdempotencyToken:     aws.String(create.UniqueId(ctx)),
+			IdempotencyToken:     aws.String(idempotency.AutoToken),
 		}
 
 		_, err := tfresource.RetryWhenIsA[any, *awstypes.ConflictException](ctx, d.Timeout(schema.TimeoutUpdate), func(ctx context.Context) (any, error) {

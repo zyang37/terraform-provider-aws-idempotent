@@ -26,13 +26,13 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
-	"github.com/hashicorp/terraform-provider-aws/internal/create"
 	"github.com/hashicorp/terraform-provider-aws/internal/enum"
 	"github.com/hashicorp/terraform-provider-aws/internal/errs"
 	"github.com/hashicorp/terraform-provider-aws/internal/errs/fwdiag"
 	"github.com/hashicorp/terraform-provider-aws/internal/framework"
 	fwflex "github.com/hashicorp/terraform-provider-aws/internal/framework/flex"
 	fwtypes "github.com/hashicorp/terraform-provider-aws/internal/framework/types"
+	"github.com/hashicorp/terraform-provider-aws/internal/idempotency"
 	"github.com/hashicorp/terraform-provider-aws/internal/retry"
 	tfslices "github.com/hashicorp/terraform-provider-aws/internal/slices"
 	"github.com/hashicorp/terraform-provider-aws/internal/tfresource"
@@ -261,7 +261,7 @@ func (r *scraperLoggingConfigurationResource) Delete(ctx context.Context, reques
 
 	scraperID := fwflex.StringValueFromFramework(ctx, data.ScraperID)
 	input := amp.DeleteScraperLoggingConfigurationInput{
-		ClientToken: aws.String(create.UniqueId(ctx)),
+		ClientToken: aws.String(idempotency.AutoToken),
 		ScraperId:   aws.String(scraperID),
 	}
 	_, err := conn.DeleteScraperLoggingConfiguration(ctx, &input)

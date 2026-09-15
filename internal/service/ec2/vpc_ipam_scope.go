@@ -18,8 +18,8 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-provider-aws/internal/conns"
-	"github.com/hashicorp/terraform-provider-aws/internal/create"
 	"github.com/hashicorp/terraform-provider-aws/internal/errs/sdkdiag"
+	"github.com/hashicorp/terraform-provider-aws/internal/idempotency"
 	"github.com/hashicorp/terraform-provider-aws/internal/retry"
 	tftags "github.com/hashicorp/terraform-provider-aws/internal/tags"
 	"github.com/hashicorp/terraform-provider-aws/names"
@@ -87,7 +87,7 @@ func resourceIPAMScopeCreate(ctx context.Context, d *schema.ResourceData, meta a
 	conn := meta.(*conns.AWSClient).EC2Client(ctx)
 
 	input := &ec2.CreateIpamScopeInput{
-		ClientToken:       aws.String(create.UniqueId(ctx)),
+		ClientToken:       aws.String(idempotency.AutoToken),
 		IpamId:            aws.String(d.Get("ipam_id").(string)),
 		TagSpecifications: getTagSpecificationsIn(ctx, awstypes.ResourceTypeIpamScope),
 	}

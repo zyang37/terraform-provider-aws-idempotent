@@ -19,6 +19,7 @@ import (
 	"github.com/hashicorp/terraform-provider-aws/internal/conns"
 	"github.com/hashicorp/terraform-provider-aws/internal/create"
 	"github.com/hashicorp/terraform-provider-aws/internal/errs/sdkdiag"
+	"github.com/hashicorp/terraform-provider-aws/internal/idempotency"
 	"github.com/hashicorp/terraform-provider-aws/internal/sdkv2"
 	tftags "github.com/hashicorp/terraform-provider-aws/internal/tags"
 	"github.com/hashicorp/terraform-provider-aws/internal/verify"
@@ -287,7 +288,7 @@ func resourceAMICopyCreate(ctx context.Context, d *schema.ResourceData, meta any
 	name := d.Get(names.AttrName).(string)
 	sourceImageID := d.Get("source_ami_id").(string)
 	input := ec2.CopyImageInput{
-		ClientToken:   aws.String(create.UniqueId(ctx)),
+		ClientToken:   aws.String(idempotency.AutoToken),
 		Description:   aws.String(d.Get(names.AttrDescription).(string)),
 		Encrypted:     aws.Bool(d.Get(names.AttrEncrypted).(bool)),
 		Name:          aws.String(name),

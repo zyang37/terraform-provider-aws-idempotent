@@ -29,6 +29,7 @@ import (
 	"github.com/hashicorp/terraform-provider-aws/internal/enum"
 	"github.com/hashicorp/terraform-provider-aws/internal/errs"
 	"github.com/hashicorp/terraform-provider-aws/internal/errs/sdkdiag"
+	"github.com/hashicorp/terraform-provider-aws/internal/idempotency"
 	"github.com/hashicorp/terraform-provider-aws/internal/retry"
 	tfec2 "github.com/hashicorp/terraform-provider-aws/internal/service/ec2"
 	tfkms "github.com/hashicorp/terraform-provider-aws/internal/service/kms"
@@ -505,7 +506,7 @@ func entityRecognizerPublishVersion(ctx context.Context, conn *comprehend.Client
 		RecognizerName:     aws.String(d.Get(names.AttrName).(string)),
 		VersionName:        versionName,
 		VpcConfig:          expandVPCConfig(d.Get(names.AttrVPCConfig).([]any)),
-		ClientRequestToken: aws.String(create.UniqueId(ctx)),
+		ClientRequestToken: aws.String(idempotency.AutoToken),
 		Tags:               getTagsIn(ctx),
 	}
 

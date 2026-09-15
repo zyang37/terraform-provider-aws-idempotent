@@ -16,10 +16,10 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-provider-aws/internal/conns"
-	"github.com/hashicorp/terraform-provider-aws/internal/create"
 	"github.com/hashicorp/terraform-provider-aws/internal/enum"
 	"github.com/hashicorp/terraform-provider-aws/internal/errs"
 	"github.com/hashicorp/terraform-provider-aws/internal/errs/sdkdiag"
+	"github.com/hashicorp/terraform-provider-aws/internal/idempotency"
 	"github.com/hashicorp/terraform-provider-aws/internal/retry"
 	tfslices "github.com/hashicorp/terraform-provider-aws/internal/slices"
 	tftags "github.com/hashicorp/terraform-provider-aws/internal/tags"
@@ -74,7 +74,7 @@ func resourceHTTPNamespaceCreate(ctx context.Context, d *schema.ResourceData, me
 
 	name := d.Get(names.AttrName).(string)
 	input := &servicediscovery.CreateHttpNamespaceInput{
-		CreatorRequestId: aws.String(create.UniqueId(ctx)),
+		CreatorRequestId: aws.String(idempotency.AutoToken),
 		Name:             aws.String(name),
 		Tags:             getTagsIn(ctx),
 	}

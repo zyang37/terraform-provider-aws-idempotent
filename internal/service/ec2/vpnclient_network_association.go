@@ -18,8 +18,8 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-provider-aws/internal/conns"
-	"github.com/hashicorp/terraform-provider-aws/internal/create"
 	"github.com/hashicorp/terraform-provider-aws/internal/errs/sdkdiag"
+	"github.com/hashicorp/terraform-provider-aws/internal/idempotency"
 	"github.com/hashicorp/terraform-provider-aws/internal/retry"
 	"github.com/hashicorp/terraform-provider-aws/names"
 )
@@ -71,7 +71,7 @@ func resourceClientVPNNetworkAssociationCreate(ctx context.Context, d *schema.Re
 
 	endpointID := d.Get("client_vpn_endpoint_id").(string)
 	input := &ec2.AssociateClientVpnTargetNetworkInput{
-		ClientToken:         aws.String(create.UniqueId(ctx)),
+		ClientToken:         aws.String(idempotency.AutoToken),
 		ClientVpnEndpointId: aws.String(endpointID),
 		SubnetId:            aws.String(d.Get(names.AttrSubnetID).(string)),
 	}

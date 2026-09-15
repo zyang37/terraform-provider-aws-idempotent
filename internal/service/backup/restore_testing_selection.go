@@ -29,13 +29,13 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
-	"github.com/hashicorp/terraform-provider-aws/internal/create"
 	"github.com/hashicorp/terraform-provider-aws/internal/errs"
 	"github.com/hashicorp/terraform-provider-aws/internal/errs/fwdiag"
 	"github.com/hashicorp/terraform-provider-aws/internal/framework"
 	fwflex "github.com/hashicorp/terraform-provider-aws/internal/framework/flex"
 	fwtypes "github.com/hashicorp/terraform-provider-aws/internal/framework/types"
 	"github.com/hashicorp/terraform-provider-aws/internal/framework/validators"
+	"github.com/hashicorp/terraform-provider-aws/internal/idempotency"
 	"github.com/hashicorp/terraform-provider-aws/internal/retry"
 	"github.com/hashicorp/terraform-provider-aws/internal/tfresource"
 	"github.com/hashicorp/terraform-provider-aws/names"
@@ -170,7 +170,7 @@ func (r *restoreTestingSelectionResource) Create(ctx context.Context, request re
 	restoreTestingPlanName := data.RestoreTestingPlanName.ValueString()
 	name := data.RestoreTestingSelectionName.ValueString()
 	input := &backup.CreateRestoreTestingSelectionInput{
-		CreatorRequestId:        aws.String(create.UniqueId(ctx)),
+		CreatorRequestId:        aws.String(idempotency.AutoToken),
 		RestoreTestingPlanName:  aws.String(restoreTestingPlanName),
 		RestoreTestingSelection: &awstypes.RestoreTestingSelectionForCreate{},
 	}

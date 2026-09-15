@@ -16,7 +16,6 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/types"
-	"github.com/hashicorp/terraform-provider-aws/internal/create"
 	"github.com/hashicorp/terraform-provider-aws/internal/enum"
 	"github.com/hashicorp/terraform-provider-aws/internal/errs"
 	"github.com/hashicorp/terraform-provider-aws/internal/errs/fwdiag"
@@ -24,6 +23,7 @@ import (
 	"github.com/hashicorp/terraform-provider-aws/internal/framework"
 	fwflex "github.com/hashicorp/terraform-provider-aws/internal/framework/flex"
 	fwtypes "github.com/hashicorp/terraform-provider-aws/internal/framework/types"
+	"github.com/hashicorp/terraform-provider-aws/internal/idempotency"
 	"github.com/hashicorp/terraform-provider-aws/internal/retry"
 	"github.com/hashicorp/terraform-provider-aws/internal/tfresource"
 	inttypes "github.com/hashicorp/terraform-provider-aws/internal/types"
@@ -94,7 +94,7 @@ func (r *prefixListAssociationResource) Create(ctx context.Context, req resource
 	coreNetworkID := fwflex.StringValueFromFramework(ctx, plan.CoreNetworkID)
 	prefixListARN := fwflex.StringValueFromFramework(ctx, plan.PrefixListARN)
 	input := networkmanager.CreateCoreNetworkPrefixListAssociationInput{
-		ClientToken:     aws.String(create.UniqueId(ctx)),
+		ClientToken:     aws.String(idempotency.AutoToken),
 		CoreNetworkId:   aws.String(coreNetworkID),
 		PrefixListAlias: fwflex.StringFromFramework(ctx, plan.PrefixListAlias),
 		PrefixListArn:   aws.String(prefixListARN),

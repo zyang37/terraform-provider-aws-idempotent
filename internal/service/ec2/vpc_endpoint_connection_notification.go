@@ -15,9 +15,9 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-provider-aws/internal/conns"
-	"github.com/hashicorp/terraform-provider-aws/internal/create"
 	"github.com/hashicorp/terraform-provider-aws/internal/errs/sdkdiag"
 	"github.com/hashicorp/terraform-provider-aws/internal/flex"
+	"github.com/hashicorp/terraform-provider-aws/internal/idempotency"
 	"github.com/hashicorp/terraform-provider-aws/internal/retry"
 	"github.com/hashicorp/terraform-provider-aws/internal/verify"
 	"github.com/hashicorp/terraform-provider-aws/names"
@@ -78,7 +78,7 @@ func resourceVPCEndpointConnectionNotificationCreate(ctx context.Context, d *sch
 	conn := meta.(*conns.AWSClient).EC2Client(ctx)
 
 	input := &ec2.CreateVpcEndpointConnectionNotificationInput{
-		ClientToken:               aws.String(create.UniqueId(ctx)),
+		ClientToken:               aws.String(idempotency.AutoToken),
 		ConnectionEvents:          flex.ExpandStringValueSet(d.Get("connection_events").(*schema.Set)),
 		ConnectionNotificationArn: aws.String(d.Get("connection_notification_arn").(string)),
 	}

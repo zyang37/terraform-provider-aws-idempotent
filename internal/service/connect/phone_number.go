@@ -18,10 +18,10 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 	"github.com/hashicorp/terraform-provider-aws/internal/conns"
-	"github.com/hashicorp/terraform-provider-aws/internal/create"
 	"github.com/hashicorp/terraform-provider-aws/internal/enum"
 	"github.com/hashicorp/terraform-provider-aws/internal/errs"
 	"github.com/hashicorp/terraform-provider-aws/internal/errs/sdkdiag"
+	"github.com/hashicorp/terraform-provider-aws/internal/idempotency"
 	"github.com/hashicorp/terraform-provider-aws/internal/retry"
 	tftags "github.com/hashicorp/terraform-provider-aws/internal/tags"
 	"github.com/hashicorp/terraform-provider-aws/internal/tfresource"
@@ -145,7 +145,7 @@ func resourcePhoneNumberCreate(ctx context.Context, d *schema.ResourceData, meta
 
 	{
 		input := connect.ClaimPhoneNumberInput{
-			ClientToken: aws.String(create.UUID(ctx)),
+			ClientToken: aws.String(idempotency.AutoToken),
 			PhoneNumber: aws.String(phoneNumber),
 			Tags:        getTagsIn(ctx),
 			TargetArn:   aws.String(targetARN),
@@ -208,7 +208,7 @@ func resourcePhoneNumberUpdate(ctx context.Context, d *schema.ResourceData, meta
 
 	if d.HasChangesExcept(names.AttrTags, names.AttrTagsAll) {
 		input := connect.UpdatePhoneNumberInput{
-			ClientToken:   aws.String(create.UUID(ctx)),
+			ClientToken:   aws.String(idempotency.AutoToken),
 			PhoneNumberId: aws.String(d.Id()),
 			TargetArn:     aws.String(d.Get(names.AttrTargetARN).(string)),
 		}
@@ -233,7 +233,7 @@ func resourcePhoneNumberDelete(ctx context.Context, d *schema.ResourceData, meta
 
 	log.Printf("[DEBUG] Deleting Connect Phone Number: %s", d.Id())
 	input := connect.ReleasePhoneNumberInput{
-		ClientToken:   aws.String(create.UUID(ctx)),
+		ClientToken:   aws.String(idempotency.AutoToken),
 		PhoneNumberId: aws.String(d.Id()),
 	}
 	_, err := conn.ReleasePhoneNumber(ctx, &input)

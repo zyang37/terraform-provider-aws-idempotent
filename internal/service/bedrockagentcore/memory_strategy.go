@@ -31,7 +31,6 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-provider-aws/internal/conns"
-	"github.com/hashicorp/terraform-provider-aws/internal/create"
 	"github.com/hashicorp/terraform-provider-aws/internal/enum"
 	"github.com/hashicorp/terraform-provider-aws/internal/errs"
 	"github.com/hashicorp/terraform-provider-aws/internal/errs/fwdiag"
@@ -44,6 +43,7 @@ import (
 	fwvalidators "github.com/hashicorp/terraform-provider-aws/internal/framework/validators"
 	tfobjectvalidator "github.com/hashicorp/terraform-provider-aws/internal/framework/validators/objectvalidator"
 	tfstringvalidator "github.com/hashicorp/terraform-provider-aws/internal/framework/validators/stringvalidator"
+	"github.com/hashicorp/terraform-provider-aws/internal/idempotency"
 	"github.com/hashicorp/terraform-provider-aws/internal/retry"
 	tfslices "github.com/hashicorp/terraform-provider-aws/internal/slices"
 	"github.com/hashicorp/terraform-provider-aws/internal/smerr"
@@ -655,7 +655,7 @@ func (r *resourceMemoryStrategy) Create(ctx context.Context, request resource.Cr
 
 	memoryID, name := fwflex.StringValueFromFramework(ctx, plan.MemoryID), fwflex.StringValueFromFramework(ctx, plan.Name)
 	input := bedrockagentcorecontrol.UpdateMemoryInput{
-		ClientToken: aws.String(create.UniqueId(ctx)),
+		ClientToken: aws.String(idempotency.AutoToken),
 		MemoryId:    aws.String(memoryID),
 		MemoryStrategies: &awstypes.ModifyMemoryStrategies{
 			AddMemoryStrategies: []awstypes.MemoryStrategyInput{strategyInput},
@@ -858,7 +858,7 @@ func (r *resourceMemoryStrategy) Update(ctx context.Context, request resource.Up
 
 		memoryID, memoryStrategyID := fwflex.StringValueFromFramework(ctx, plan.MemoryID), fwflex.StringValueFromFramework(ctx, plan.MemoryStrategyID)
 		input := bedrockagentcorecontrol.UpdateMemoryInput{
-			ClientToken: aws.String(create.UniqueId(ctx)),
+			ClientToken: aws.String(idempotency.AutoToken),
 			MemoryId:    aws.String(memoryID),
 			MemoryStrategies: &awstypes.ModifyMemoryStrategies{
 				ModifyMemoryStrategies: []awstypes.ModifyMemoryStrategyInput{strategyInput},
@@ -927,7 +927,7 @@ func (r *resourceMemoryStrategy) Delete(ctx context.Context, request resource.De
 
 	memoryID, memoryStrategyID := fwflex.StringValueFromFramework(ctx, state.MemoryID), fwflex.StringValueFromFramework(ctx, state.MemoryStrategyID)
 	input := bedrockagentcorecontrol.UpdateMemoryInput{
-		ClientToken: aws.String(create.UniqueId(ctx)),
+		ClientToken: aws.String(idempotency.AutoToken),
 		MemoryId:    aws.String(memoryID),
 		MemoryStrategies: &awstypes.ModifyMemoryStrategies{
 			DeleteMemoryStrategies: []awstypes.DeleteMemoryStrategyInput{

@@ -24,12 +24,12 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/tfsdk"
 	"github.com/hashicorp/terraform-plugin-framework/types"
-	"github.com/hashicorp/terraform-provider-aws/internal/create"
 	"github.com/hashicorp/terraform-provider-aws/internal/errs"
 	"github.com/hashicorp/terraform-provider-aws/internal/errs/fwdiag"
 	"github.com/hashicorp/terraform-provider-aws/internal/framework"
 	fwflex "github.com/hashicorp/terraform-provider-aws/internal/framework/flex"
 	fwtypes "github.com/hashicorp/terraform-provider-aws/internal/framework/types"
+	"github.com/hashicorp/terraform-provider-aws/internal/idempotency"
 	"github.com/hashicorp/terraform-provider-aws/internal/retry"
 	"github.com/hashicorp/terraform-provider-aws/internal/smerr"
 	"github.com/hashicorp/terraform-provider-aws/names"
@@ -114,7 +114,7 @@ func (r *lifecyclePolicyResource) Create(ctx context.Context, request resource.C
 	}
 
 	// Additional fields.
-	input.ClientToken = aws.String(create.UniqueId(ctx))
+	input.ClientToken = aws.String(idempotency.AutoToken)
 
 	output, err := conn.CreateLifecyclePolicy(ctx, &input)
 
@@ -188,7 +188,7 @@ func (r *lifecyclePolicyResource) Update(ctx context.Context, request resource.U
 		}
 
 		// Additional fields.
-		input.ClientToken = aws.String(create.UniqueId(ctx))
+		input.ClientToken = aws.String(idempotency.AutoToken)
 		input.PolicyVersion = old.PolicyVersion.ValueStringPointer() // use policy version from state since it can be recalculated on update
 
 		output, err := conn.UpdateLifecyclePolicy(ctx, &input)
@@ -217,7 +217,7 @@ func (r *lifecyclePolicyResource) Delete(ctx context.Context, request resource.D
 
 	name := fwflex.StringValueFromFramework(ctx, data.Name)
 	input := opensearchserverless.DeleteLifecyclePolicyInput{
-		ClientToken: aws.String(create.UniqueId(ctx)),
+		ClientToken: aws.String(idempotency.AutoToken),
 		Name:        aws.String(name),
 		Type:        data.Type.ValueEnum(),
 	}

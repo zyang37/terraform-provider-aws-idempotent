@@ -24,6 +24,7 @@ import (
 	"github.com/hashicorp/terraform-provider-aws/internal/create"
 	"github.com/hashicorp/terraform-provider-aws/internal/errs"
 	"github.com/hashicorp/terraform-provider-aws/internal/errs/sdkdiag"
+	"github.com/hashicorp/terraform-provider-aws/internal/idempotency"
 	"github.com/hashicorp/terraform-provider-aws/internal/retry"
 	"github.com/hashicorp/terraform-provider-aws/internal/sdkv2"
 	tfiam "github.com/hashicorp/terraform-provider-aws/internal/service/iam"
@@ -142,7 +143,7 @@ func resourceSecretCreate(ctx context.Context, d *schema.ResourceData, meta any)
 
 	name := create.Name(ctx, d.Get(names.AttrName).(string), d.Get(names.AttrNamePrefix).(string))
 	input := secretsmanager.CreateSecretInput{
-		ClientRequestToken:          aws.String(create.UniqueId(ctx)), // Needed because we're handling our own retries
+		ClientRequestToken:          aws.String(idempotency.AutoToken), // Needed because we're handling our own retries
 		Description:                 aws.String(d.Get(names.AttrDescription).(string)),
 		ForceOverwriteReplicaSecret: d.Get("force_overwrite_replica_secret").(bool),
 		Name:                        aws.String(name),
@@ -311,7 +312,7 @@ func resourceSecretUpdate(ctx context.Context, d *schema.ResourceData, meta any)
 
 	if d.HasChanges(names.AttrDescription, names.AttrKMSKeyID) {
 		input := secretsmanager.UpdateSecretInput{
-			ClientRequestToken: aws.String(create.UniqueId(ctx)), // Needed because we're handling our own retries
+			ClientRequestToken: aws.String(idempotency.AutoToken), // Needed because we're handling our own retries
 			Description:        aws.String(d.Get(names.AttrDescription).(string)),
 			SecretId:           aws.String(d.Id()),
 		}

@@ -27,6 +27,7 @@ import (
 	"github.com/hashicorp/terraform-provider-aws/internal/errs"
 	"github.com/hashicorp/terraform-provider-aws/internal/errs/sdkdiag"
 	"github.com/hashicorp/terraform-provider-aws/internal/flex"
+	"github.com/hashicorp/terraform-provider-aws/internal/idempotency"
 	"github.com/hashicorp/terraform-provider-aws/internal/retry"
 	tftags "github.com/hashicorp/terraform-provider-aws/internal/tags"
 	"github.com/hashicorp/terraform-provider-aws/internal/tfresource"
@@ -423,7 +424,7 @@ func resourceNodeGroupCreate(ctx context.Context, d *schema.ResourceData, meta a
 	nodeGroupName := create.Name(ctx, d.Get("node_group_name").(string), d.Get("node_group_name_prefix").(string))
 	groupID := nodeGroupCreateResourceID(clusterName, nodeGroupName)
 	input := eks.CreateNodegroupInput{
-		ClientRequestToken: aws.String(create.UniqueId(ctx)),
+		ClientRequestToken: aws.String(idempotency.AutoToken),
 		ClusterName:        aws.String(clusterName),
 		NodegroupName:      aws.String(nodeGroupName),
 		NodeRole:           aws.String(d.Get("node_role_arn").(string)),
@@ -542,7 +543,7 @@ func resourceNodeGroupUpdate(ctx context.Context, d *schema.ResourceData, meta a
 	// Do any version update first.
 	if d.HasChanges(names.AttrLaunchTemplate, "release_version", names.AttrVersion) {
 		input := eks.UpdateNodegroupVersionInput{
-			ClientRequestToken: aws.String(create.UniqueId(ctx)),
+			ClientRequestToken: aws.String(idempotency.AutoToken),
 			ClusterName:        aws.String(clusterName),
 			Force:              d.Get("force_update_version").(bool),
 			NodegroupName:      aws.String(nodeGroupName),
@@ -594,7 +595,7 @@ func resourceNodeGroupUpdate(ctx context.Context, d *schema.ResourceData, meta a
 		oldTaintsRaw, newTaintsRaw := d.GetChange("taint")
 
 		input := eks.UpdateNodegroupConfigInput{
-			ClientRequestToken: aws.String(create.UniqueId(ctx)),
+			ClientRequestToken: aws.String(idempotency.AutoToken),
 			ClusterName:        aws.String(clusterName),
 			Labels:             expandUpdateLabelsPayload(ctx, oldLabelsRaw, newLabelsRaw),
 			NodegroupName:      aws.String(nodeGroupName),

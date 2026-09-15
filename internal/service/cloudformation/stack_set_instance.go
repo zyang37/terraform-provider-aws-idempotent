@@ -26,6 +26,7 @@ import (
 	"github.com/hashicorp/terraform-provider-aws/internal/errs"
 	"github.com/hashicorp/terraform-provider-aws/internal/errs/sdkdiag"
 	"github.com/hashicorp/terraform-provider-aws/internal/flex"
+	"github.com/hashicorp/terraform-provider-aws/internal/idempotency"
 	"github.com/hashicorp/terraform-provider-aws/internal/retry"
 	"github.com/hashicorp/terraform-provider-aws/internal/tfresource"
 	inttypes "github.com/hashicorp/terraform-provider-aws/internal/types"
@@ -296,7 +297,7 @@ func resourceStackSetInstanceCreate(ctx context.Context, d *schema.ResourceData,
 
 	output, err := tfresource.RetryWhen(ctx, propagationTimeout,
 		func(ctx context.Context) (*cloudformation.CreateStackInstancesOutput, error) {
-			input.OperationId = aws.String(create.UniqueId(ctx))
+			input.OperationId = aws.String(idempotency.AutoToken)
 
 			return conn.CreateStackInstances(ctx, input)
 		},
@@ -389,7 +390,7 @@ func resourceStackSetInstanceUpdate(ctx context.Context, d *schema.ResourceData,
 		stackSetName, accountOrOrgID, region := parts[0], parts[1], parts[2]
 		input := &cloudformation.UpdateStackInstancesInput{
 			Accounts:           []string{accountOrOrgID},
-			OperationId:        aws.String(create.UniqueId(ctx)),
+			OperationId:        aws.String(idempotency.AutoToken),
 			ParameterOverrides: []awstypes.Parameter{},
 			Regions:            []string{region},
 			StackSetName:       aws.String(stackSetName),
@@ -434,7 +435,7 @@ func resourceStackSetInstanceDelete(ctx context.Context, d *schema.ResourceData,
 	stackSetName, accountOrOrgID, region := parts[0], parts[1], parts[2]
 	input := &cloudformation.DeleteStackInstancesInput{
 		Accounts:     []string{accountOrOrgID},
-		OperationId:  aws.String(create.UniqueId(ctx)),
+		OperationId:  aws.String(idempotency.AutoToken),
 		Regions:      []string{region},
 		RetainStacks: aws.Bool(d.Get("retain_stack").(bool)),
 		StackSetName: aws.String(stackSetName),

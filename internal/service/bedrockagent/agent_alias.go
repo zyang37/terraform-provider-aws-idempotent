@@ -31,6 +31,7 @@ import (
 	"github.com/hashicorp/terraform-provider-aws/internal/framework"
 	fwflex "github.com/hashicorp/terraform-provider-aws/internal/framework/flex"
 	fwtypes "github.com/hashicorp/terraform-provider-aws/internal/framework/types"
+	"github.com/hashicorp/terraform-provider-aws/internal/idempotency"
 	"github.com/hashicorp/terraform-provider-aws/internal/retry"
 	tftags "github.com/hashicorp/terraform-provider-aws/internal/tags"
 	"github.com/hashicorp/terraform-provider-aws/internal/tfresource"
@@ -122,7 +123,7 @@ func (r *agentAliasResource) Create(ctx context.Context, request resource.Create
 		return
 	}
 
-	input.ClientToken = aws.String(create.UniqueId(ctx))
+	input.ClientToken = aws.String(idempotency.AutoToken)
 	input.Tags = getTagsIn(ctx)
 
 	output, err := conn.CreateAgentAlias(ctx, &input)

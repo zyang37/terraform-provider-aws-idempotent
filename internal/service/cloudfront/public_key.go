@@ -21,6 +21,7 @@ import (
 	"github.com/hashicorp/terraform-provider-aws/internal/create"
 	"github.com/hashicorp/terraform-provider-aws/internal/errs"
 	"github.com/hashicorp/terraform-provider-aws/internal/errs/sdkdiag"
+	"github.com/hashicorp/terraform-provider-aws/internal/idempotency"
 	"github.com/hashicorp/terraform-provider-aws/internal/retry"
 	"github.com/hashicorp/terraform-provider-aws/internal/tfresource"
 	"github.com/hashicorp/terraform-provider-aws/names"
@@ -97,7 +98,7 @@ func resourcePublicKeyCreate(ctx context.Context, d *schema.ResourceData, meta a
 	if v, ok := d.GetOk("caller_reference"); ok {
 		input.PublicKeyConfig.CallerReference = aws.String(v.(string))
 	} else {
-		input.PublicKeyConfig.CallerReference = aws.String(create.UniqueId(ctx))
+		input.PublicKeyConfig.CallerReference = aws.String(idempotency.AutoToken)
 	}
 
 	if v, ok := d.GetOk(names.AttrComment); ok {
@@ -158,7 +159,7 @@ func resourcePublicKeyUpdate(ctx context.Context, d *schema.ResourceData, meta a
 	if v, ok := d.GetOk("caller_reference"); ok {
 		input.PublicKeyConfig.CallerReference = aws.String(v.(string))
 	} else {
-		input.PublicKeyConfig.CallerReference = aws.String(create.UniqueId(ctx))
+		input.PublicKeyConfig.CallerReference = aws.String(idempotency.AutoToken)
 	}
 
 	if v, ok := d.GetOk(names.AttrComment); ok {

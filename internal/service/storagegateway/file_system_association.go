@@ -19,8 +19,8 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 	"github.com/hashicorp/terraform-provider-aws/internal/conns"
-	"github.com/hashicorp/terraform-provider-aws/internal/create"
 	"github.com/hashicorp/terraform-provider-aws/internal/errs/sdkdiag"
+	"github.com/hashicorp/terraform-provider-aws/internal/idempotency"
 	"github.com/hashicorp/terraform-provider-aws/internal/retry"
 	tfslices "github.com/hashicorp/terraform-provider-aws/internal/slices"
 	tftags "github.com/hashicorp/terraform-provider-aws/internal/tags"
@@ -121,7 +121,7 @@ func resourceFileSystemAssociationCreate(ctx context.Context, d *schema.Resource
 
 	gatewayARN := d.Get("gateway_arn").(string)
 	input := &storagegateway.AssociateFileSystemInput{
-		ClientToken: aws.String(create.UniqueId(ctx)),
+		ClientToken: aws.String(idempotency.AutoToken),
 		GatewayARN:  aws.String(gatewayARN),
 		LocationARN: aws.String(d.Get("location_arn").(string)),
 		Password:    aws.String(d.Get(names.AttrPassword).(string)),

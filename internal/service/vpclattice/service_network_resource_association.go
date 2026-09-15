@@ -22,13 +22,13 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/types"
-	"github.com/hashicorp/terraform-provider-aws/internal/create"
 	"github.com/hashicorp/terraform-provider-aws/internal/enum"
 	"github.com/hashicorp/terraform-provider-aws/internal/errs"
 	"github.com/hashicorp/terraform-provider-aws/internal/errs/fwdiag"
 	"github.com/hashicorp/terraform-provider-aws/internal/framework"
 	fwflex "github.com/hashicorp/terraform-provider-aws/internal/framework/flex"
 	fwtypes "github.com/hashicorp/terraform-provider-aws/internal/framework/types"
+	"github.com/hashicorp/terraform-provider-aws/internal/idempotency"
 	"github.com/hashicorp/terraform-provider-aws/internal/retry"
 	tftags "github.com/hashicorp/terraform-provider-aws/internal/tags"
 	"github.com/hashicorp/terraform-provider-aws/internal/tfresource"
@@ -107,7 +107,7 @@ func (r *serviceNetworkResourceAssociationResource) Create(ctx context.Context, 
 	}
 
 	// Additional fields.
-	input.ClientToken = aws.String(create.UniqueId(ctx))
+	input.ClientToken = aws.String(idempotency.AutoToken)
 	input.ResourceConfigurationIdentifier = fwflex.StringFromFramework(ctx, data.ResourceConfigurationID)
 	input.ServiceNetworkIdentifier = fwflex.StringFromFramework(ctx, data.ServiceNetworkID)
 	input.Tags = getTagsIn(ctx)

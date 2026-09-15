@@ -21,10 +21,10 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 	"github.com/hashicorp/terraform-provider-aws/internal/conns"
-	"github.com/hashicorp/terraform-provider-aws/internal/create"
 	"github.com/hashicorp/terraform-provider-aws/internal/enum"
 	"github.com/hashicorp/terraform-provider-aws/internal/errs"
 	"github.com/hashicorp/terraform-provider-aws/internal/errs/sdkdiag"
+	"github.com/hashicorp/terraform-provider-aws/internal/idempotency"
 	tfjson "github.com/hashicorp/terraform-provider-aws/internal/json"
 	"github.com/hashicorp/terraform-provider-aws/internal/retry"
 	tfcloudformation "github.com/hashicorp/terraform-provider-aws/internal/service/cloudformation"
@@ -95,7 +95,7 @@ func resourceResourceCreate(ctx context.Context, d *schema.ResourceData, meta an
 
 	typeName := d.Get("type_name").(string)
 	input := cloudcontrol.CreateResourceInput{
-		ClientToken:  aws.String(create.UniqueId(ctx)),
+		ClientToken:  aws.String(idempotency.AutoToken),
 		DesiredState: aws.String(d.Get("desired_state").(string)),
 		TypeName:     aws.String(typeName),
 	}
@@ -170,7 +170,7 @@ func resourceResourceUpdate(ctx context.Context, d *schema.ResourceData, meta an
 
 		typeName := d.Get("type_name").(string)
 		input := cloudcontrol.UpdateResourceInput{
-			ClientToken:   aws.String(create.UniqueId(ctx)),
+			ClientToken:   aws.String(idempotency.AutoToken),
 			Identifier:    aws.String(d.Id()),
 			PatchDocument: aws.String(patchDocument),
 			TypeName:      aws.String(typeName),
@@ -202,7 +202,7 @@ func resourceResourceDelete(ctx context.Context, d *schema.ResourceData, meta an
 
 	typeName := d.Get("type_name").(string)
 	input := cloudcontrol.DeleteResourceInput{
-		ClientToken: aws.String(create.UniqueId(ctx)),
+		ClientToken: aws.String(idempotency.AutoToken),
 		Identifier:  aws.String(d.Id()),
 		TypeName:    aws.String(typeName),
 	}

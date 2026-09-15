@@ -17,9 +17,9 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 	"github.com/hashicorp/terraform-provider-aws/internal/conns"
-	"github.com/hashicorp/terraform-provider-aws/internal/create"
 	"github.com/hashicorp/terraform-provider-aws/internal/errs"
 	"github.com/hashicorp/terraform-provider-aws/internal/errs/sdkdiag"
+	"github.com/hashicorp/terraform-provider-aws/internal/idempotency"
 	"github.com/hashicorp/terraform-provider-aws/internal/retry"
 	"github.com/hashicorp/terraform-provider-aws/internal/tfresource"
 	"github.com/hashicorp/terraform-provider-aws/names"
@@ -85,7 +85,7 @@ func resourceCustomRoutingListenerCreate(ctx context.Context, d *schema.Resource
 	acceleratorARN := d.Get("accelerator_arn").(string)
 	input := &globalaccelerator.CreateCustomRoutingListenerInput{
 		AcceleratorArn:   aws.String(acceleratorARN),
-		IdempotencyToken: aws.String(create.UniqueId(ctx)),
+		IdempotencyToken: aws.String(idempotency.AutoToken),
 		PortRanges:       expandPortRanges(d.Get("port_range").(*schema.Set).List()),
 	}
 

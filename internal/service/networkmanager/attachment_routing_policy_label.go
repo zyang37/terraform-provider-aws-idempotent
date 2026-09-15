@@ -17,13 +17,13 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/types"
-	"github.com/hashicorp/terraform-provider-aws/internal/create"
 	"github.com/hashicorp/terraform-provider-aws/internal/enum"
 	"github.com/hashicorp/terraform-provider-aws/internal/errs"
 	"github.com/hashicorp/terraform-provider-aws/internal/errs/fwdiag"
 	intflex "github.com/hashicorp/terraform-provider-aws/internal/flex"
 	"github.com/hashicorp/terraform-provider-aws/internal/framework"
 	fwflex "github.com/hashicorp/terraform-provider-aws/internal/framework/flex"
+	"github.com/hashicorp/terraform-provider-aws/internal/idempotency"
 	"github.com/hashicorp/terraform-provider-aws/internal/retry"
 	tfslices "github.com/hashicorp/terraform-provider-aws/internal/slices"
 	"github.com/hashicorp/terraform-provider-aws/internal/tfresource"
@@ -86,7 +86,7 @@ func (r *attachmentRoutingPolicyLabelResource) Create(ctx context.Context, req r
 	coreNetworkID, attachmentID := fwflex.StringValueFromFramework(ctx, plan.CoreNetworkID), fwflex.StringValueFromFramework(ctx, plan.AttachmentID)
 	input := networkmanager.PutAttachmentRoutingPolicyLabelInput{
 		AttachmentId:       aws.String(attachmentID),
-		ClientToken:        aws.String(create.UniqueId(ctx)),
+		ClientToken:        aws.String(idempotency.AutoToken),
 		CoreNetworkId:      aws.String(coreNetworkID),
 		RoutingPolicyLabel: fwflex.StringFromFramework(ctx, plan.RoutingPolicyLabel),
 	}

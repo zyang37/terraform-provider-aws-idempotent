@@ -26,13 +26,13 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
-	"github.com/hashicorp/terraform-provider-aws/internal/create"
 	"github.com/hashicorp/terraform-provider-aws/internal/errs"
 	"github.com/hashicorp/terraform-provider-aws/internal/errs/fwdiag"
 	"github.com/hashicorp/terraform-provider-aws/internal/framework"
 	fwflex "github.com/hashicorp/terraform-provider-aws/internal/framework/flex"
 	fwtypes "github.com/hashicorp/terraform-provider-aws/internal/framework/types"
 	"github.com/hashicorp/terraform-provider-aws/internal/framework/validators"
+	"github.com/hashicorp/terraform-provider-aws/internal/idempotency"
 	"github.com/hashicorp/terraform-provider-aws/internal/retry"
 	tftags "github.com/hashicorp/terraform-provider-aws/internal/tags"
 	"github.com/hashicorp/terraform-provider-aws/internal/tfresource"
@@ -166,7 +166,7 @@ func (r *restoreTestingPlanResource) Create(ctx context.Context, request resourc
 
 	name := data.RestoreTestingPlanName.ValueString()
 	input := &backup.CreateRestoreTestingPlanInput{
-		CreatorRequestId:   aws.String(create.UniqueId(ctx)),
+		CreatorRequestId:   aws.String(idempotency.AutoToken),
 		RestoreTestingPlan: &awstypes.RestoreTestingPlanForCreate{},
 		Tags:               getTagsIn(ctx),
 	}

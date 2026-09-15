@@ -19,11 +19,11 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 	"github.com/hashicorp/terraform-provider-aws/internal/conns"
-	"github.com/hashicorp/terraform-provider-aws/internal/create"
 	"github.com/hashicorp/terraform-provider-aws/internal/enum"
 	"github.com/hashicorp/terraform-provider-aws/internal/errs"
 	"github.com/hashicorp/terraform-provider-aws/internal/errs/sdkdiag"
 	"github.com/hashicorp/terraform-provider-aws/internal/flex"
+	"github.com/hashicorp/terraform-provider-aws/internal/idempotency"
 	"github.com/hashicorp/terraform-provider-aws/internal/retry"
 	tftags "github.com/hashicorp/terraform-provider-aws/internal/tags"
 	"github.com/hashicorp/terraform-provider-aws/internal/tfresource"
@@ -288,7 +288,7 @@ func resourceProvisionedProductCreate(ctx context.Context, d *schema.ResourceDat
 
 	name := d.Get(names.AttrName).(string)
 	input := servicecatalog.ProvisionProductInput{
-		ProvisionToken:         aws.String(create.UniqueId(ctx)),
+		ProvisionToken:         aws.String(idempotency.AutoToken),
 		ProvisionedProductName: aws.String(name),
 		Tags:                   getTagsIn(ctx),
 	}
@@ -464,7 +464,7 @@ func resourceProvisionedProductUpdate(ctx context.Context, d *schema.ResourceDat
 
 	input := servicecatalog.UpdateProvisionedProductInput{
 		ProvisionedProductId: aws.String(d.Id()),
-		UpdateToken:          aws.String(create.UniqueId(ctx)),
+		UpdateToken:          aws.String(idempotency.AutoToken),
 	}
 
 	if v, ok := d.GetOk("accept_language"); ok {
@@ -554,7 +554,7 @@ func resourceProvisionedProductDelete(ctx context.Context, d *schema.ResourceDat
 	conn := meta.(*conns.AWSClient).ServiceCatalogClient(ctx)
 
 	input := servicecatalog.TerminateProvisionedProductInput{
-		TerminateToken:       aws.String(create.UniqueId(ctx)),
+		TerminateToken:       aws.String(idempotency.AutoToken),
 		ProvisionedProductId: aws.String(d.Id()),
 	}
 

@@ -29,7 +29,6 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
-	"github.com/hashicorp/terraform-provider-aws/internal/create"
 	"github.com/hashicorp/terraform-provider-aws/internal/enum"
 	"github.com/hashicorp/terraform-provider-aws/internal/errs"
 	"github.com/hashicorp/terraform-provider-aws/internal/errs/fwdiag"
@@ -37,6 +36,7 @@ import (
 	fwflex "github.com/hashicorp/terraform-provider-aws/internal/framework/flex"
 	fwtypes "github.com/hashicorp/terraform-provider-aws/internal/framework/types"
 	fwvalidators "github.com/hashicorp/terraform-provider-aws/internal/framework/validators"
+	"github.com/hashicorp/terraform-provider-aws/internal/idempotency"
 	"github.com/hashicorp/terraform-provider-aws/internal/retry"
 	tftags "github.com/hashicorp/terraform-provider-aws/internal/tags"
 	"github.com/hashicorp/terraform-provider-aws/internal/tfresource"
@@ -156,7 +156,7 @@ func (r *clusterResource) Create(ctx context.Context, request resource.CreateReq
 	}
 
 	// Additional fields.
-	input.ClientToken = aws.String(create.UniqueId(ctx))
+	input.ClientToken = aws.String(idempotency.AutoToken)
 	input.Tags = getTagsIn(ctx)
 
 	output, err := conn.CreateCluster(ctx, &input)
@@ -256,7 +256,7 @@ func (r *clusterResource) Update(ctx context.Context, request resource.UpdateReq
 		}
 
 		// Additional fields.
-		input.ClientToken = aws.String(create.UniqueId(ctx))
+		input.ClientToken = aws.String(idempotency.AutoToken)
 
 		_, err := conn.UpdateCluster(ctx, &input)
 
@@ -308,7 +308,7 @@ func (r *clusterResource) Delete(ctx context.Context, request resource.DeleteReq
 		input := dsql.UpdateClusterInput{
 			Identifier:                data.Identifier.ValueStringPointer(),
 			DeletionProtectionEnabled: aws.Bool(false),
-			ClientToken:               aws.String(create.UniqueId(ctx)),
+			ClientToken:               aws.String(idempotency.AutoToken),
 		}
 		// Changing DeletionProtectionEnabled is instantaneous, no need to wait.
 		if _, err := conn.UpdateCluster(ctx, &input); err != nil {

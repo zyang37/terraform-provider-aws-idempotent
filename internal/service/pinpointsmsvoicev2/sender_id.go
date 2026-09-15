@@ -26,13 +26,13 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
-	"github.com/hashicorp/terraform-provider-aws/internal/create"
 	"github.com/hashicorp/terraform-provider-aws/internal/errs"
 	"github.com/hashicorp/terraform-provider-aws/internal/errs/fwdiag"
 	intflex "github.com/hashicorp/terraform-provider-aws/internal/flex"
 	"github.com/hashicorp/terraform-provider-aws/internal/framework"
 	fwflex "github.com/hashicorp/terraform-provider-aws/internal/framework/flex"
 	fwtypes "github.com/hashicorp/terraform-provider-aws/internal/framework/types"
+	"github.com/hashicorp/terraform-provider-aws/internal/idempotency"
 	"github.com/hashicorp/terraform-provider-aws/internal/retry"
 	"github.com/hashicorp/terraform-provider-aws/internal/smerr"
 	tftags "github.com/hashicorp/terraform-provider-aws/internal/tags"
@@ -158,7 +158,7 @@ func (r *senderIDResource) Create(ctx context.Context, request resource.CreateRe
 	// request to its ClientToken, so reusing one token would replay the cached
 	// SENDER_ID_REQUIRES_REGISTRATION failure instead of re-evaluating the request.
 	outputRaw, err := tfresource.RetryWhenAWSErrMessageContains(ctx, r.CreateTimeout(ctx, data.Timeouts), func(ctx context.Context) (any, error) {
-		input.ClientToken = aws.String(create.UniqueId(ctx))
+		input.ClientToken = aws.String(idempotency.AutoToken)
 		return conn.RequestSenderId(ctx, &input)
 	}, "ValidationException", "SENDER_ID_REQUIRES_REGISTRATION")
 

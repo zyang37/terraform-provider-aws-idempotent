@@ -22,6 +22,7 @@ import (
 	"github.com/hashicorp/terraform-provider-aws/internal/conns"
 	"github.com/hashicorp/terraform-provider-aws/internal/create"
 	"github.com/hashicorp/terraform-provider-aws/internal/errs/sdkdiag"
+	"github.com/hashicorp/terraform-provider-aws/internal/idempotency"
 	"github.com/hashicorp/terraform-provider-aws/internal/retry"
 	tfslices "github.com/hashicorp/terraform-provider-aws/internal/slices"
 	tftags "github.com/hashicorp/terraform-provider-aws/internal/tags"
@@ -180,7 +181,7 @@ func resourceRouteTableCreate(ctx context.Context, d *schema.ResourceData, meta 
 	conn := meta.(*conns.AWSClient).EC2Client(ctx)
 
 	input := ec2.CreateRouteTableInput{
-		ClientToken:       aws.String(create.UniqueId(ctx)),
+		ClientToken:       aws.String(idempotency.AutoToken),
 		TagSpecifications: getTagSpecificationsIn(ctx, awstypes.ResourceTypeRouteTable),
 		VpcId:             aws.String(d.Get(names.AttrVPCID).(string)),
 	}

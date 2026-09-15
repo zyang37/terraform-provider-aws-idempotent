@@ -19,10 +19,10 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 	"github.com/hashicorp/terraform-provider-aws/internal/conns"
-	"github.com/hashicorp/terraform-provider-aws/internal/create"
 	"github.com/hashicorp/terraform-provider-aws/internal/enum"
 	"github.com/hashicorp/terraform-provider-aws/internal/errs"
 	"github.com/hashicorp/terraform-provider-aws/internal/errs/sdkdiag"
+	"github.com/hashicorp/terraform-provider-aws/internal/idempotency"
 	"github.com/hashicorp/terraform-provider-aws/internal/provider/sdkv2/importer"
 	"github.com/hashicorp/terraform-provider-aws/internal/retry"
 	tftags "github.com/hashicorp/terraform-provider-aws/internal/tags"
@@ -371,7 +371,7 @@ func resourceCertificateAuthorityCreate(ctx context.Context, d *schema.ResourceD
 	input := acmpca.CreateCertificateAuthorityInput{
 		CertificateAuthorityConfiguration: expandCertificateAuthorityConfiguration(d.Get("certificate_authority_configuration").([]any)),
 		CertificateAuthorityType:          types.CertificateAuthorityType(d.Get(names.AttrType).(string)),
-		IdempotencyToken:                  aws.String(create.UniqueId(ctx)),
+		IdempotencyToken:                  aws.String(idempotency.AutoToken),
 		RevocationConfiguration:           expandRevocationConfiguration(d.Get("revocation_configuration").([]any)),
 		Tags:                              getTagsIn(ctx),
 	}

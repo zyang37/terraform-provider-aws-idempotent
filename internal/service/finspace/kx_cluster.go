@@ -22,6 +22,7 @@ import (
 	"github.com/hashicorp/terraform-provider-aws/internal/create"
 	"github.com/hashicorp/terraform-provider-aws/internal/enum"
 	"github.com/hashicorp/terraform-provider-aws/internal/flex"
+	"github.com/hashicorp/terraform-provider-aws/internal/idempotency"
 	"github.com/hashicorp/terraform-provider-aws/internal/retry"
 	tftags "github.com/hashicorp/terraform-provider-aws/internal/tags"
 	"github.com/hashicorp/terraform-provider-aws/internal/tfresource"
@@ -450,7 +451,7 @@ func resourceKxClusterCreate(ctx context.Context, d *schema.ResourceData, meta a
 		ClusterType:   types.KxClusterType(d.Get(names.AttrType).(string)),
 		ReleaseLabel:  aws.String(d.Get("release_label").(string)),
 		AzMode:        types.KxAzMode(d.Get("az_mode").(string)),
-		ClientToken:   aws.String(create.UniqueId(ctx)),
+		ClientToken:   aws.String(idempotency.AutoToken),
 		Tags:          getTagsIn(ctx),
 	}
 

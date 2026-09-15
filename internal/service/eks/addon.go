@@ -21,10 +21,10 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 	"github.com/hashicorp/terraform-provider-aws/internal/conns"
-	"github.com/hashicorp/terraform-provider-aws/internal/create"
 	"github.com/hashicorp/terraform-provider-aws/internal/enum"
 	"github.com/hashicorp/terraform-provider-aws/internal/errs"
 	"github.com/hashicorp/terraform-provider-aws/internal/errs/sdkdiag"
+	"github.com/hashicorp/terraform-provider-aws/internal/idempotency"
 	"github.com/hashicorp/terraform-provider-aws/internal/retry"
 	tftags "github.com/hashicorp/terraform-provider-aws/internal/tags"
 	"github.com/hashicorp/terraform-provider-aws/internal/tfresource"
@@ -173,7 +173,7 @@ func resourceAddonCreate(ctx context.Context, d *schema.ResourceData, meta any) 
 	id := addonCreateResourceID(clusterName, addonName)
 	input := eks.CreateAddonInput{
 		AddonName:          aws.String(addonName),
-		ClientRequestToken: aws.String(create.UniqueId(ctx)),
+		ClientRequestToken: aws.String(idempotency.AutoToken),
 		ClusterName:        aws.String(clusterName),
 		Tags:               getTagsIn(ctx),
 	}
@@ -282,7 +282,7 @@ func resourceAddonUpdate(ctx context.Context, d *schema.ResourceData, meta any) 
 	if d.HasChanges("addon_version", "service_account_role_arn", "configuration_values", "pod_identity_association") {
 		input := eks.UpdateAddonInput{
 			AddonName:          aws.String(addonName),
-			ClientRequestToken: aws.String(create.UniqueId(ctx)),
+			ClientRequestToken: aws.String(idempotency.AutoToken),
 			ClusterName:        aws.String(clusterName),
 		}
 

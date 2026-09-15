@@ -36,7 +36,6 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
-	"github.com/hashicorp/terraform-provider-aws/internal/create"
 	"github.com/hashicorp/terraform-provider-aws/internal/enum"
 	"github.com/hashicorp/terraform-provider-aws/internal/errs"
 	"github.com/hashicorp/terraform-provider-aws/internal/errs/fwdiag"
@@ -46,6 +45,7 @@ import (
 	fwtypes "github.com/hashicorp/terraform-provider-aws/internal/framework/types"
 	fwvalidators "github.com/hashicorp/terraform-provider-aws/internal/framework/validators"
 	tfobjectvalidator "github.com/hashicorp/terraform-provider-aws/internal/framework/validators/objectvalidator"
+	"github.com/hashicorp/terraform-provider-aws/internal/idempotency"
 	"github.com/hashicorp/terraform-provider-aws/internal/retry"
 	tfslices "github.com/hashicorp/terraform-provider-aws/internal/slices"
 	"github.com/hashicorp/terraform-provider-aws/internal/smerr"
@@ -903,7 +903,7 @@ func (r *harnessResource) Create(ctx context.Context, request resource.CreateReq
 		harness   *awstypes.Harness
 	)
 	err := tfresource.Retry(ctx, propagationTimeout+createTimeout, func(ctx context.Context) *tfresource.RetryError {
-		input.ClientToken = aws.String(create.UniqueId(ctx))
+		input.ClientToken = aws.String(idempotency.AutoToken)
 		out, err := conn.CreateHarness(ctx, &input)
 
 		// Only retry IAM eventual consistency errors up to that timeout.
@@ -1062,7 +1062,7 @@ func (r *harnessResource) Update(ctx context.Context, request resource.UpdateReq
 		}
 
 		// Additional fields.
-		input.ClientToken = aws.String(create.UniqueId(ctx))
+		input.ClientToken = aws.String(idempotency.AutoToken)
 
 		if !state.Memory.IsNull() && config.Memory.IsNull() {
 			// Clears configured value for memory

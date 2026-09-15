@@ -18,10 +18,10 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-provider-aws/internal/conns"
-	"github.com/hashicorp/terraform-provider-aws/internal/create"
 	"github.com/hashicorp/terraform-provider-aws/internal/errs"
 	"github.com/hashicorp/terraform-provider-aws/internal/errs/sdkdiag"
 	"github.com/hashicorp/terraform-provider-aws/internal/flex"
+	"github.com/hashicorp/terraform-provider-aws/internal/idempotency"
 	"github.com/hashicorp/terraform-provider-aws/internal/retry"
 	"github.com/hashicorp/terraform-provider-aws/internal/sdkv2/types/nullable"
 	"github.com/hashicorp/terraform-provider-aws/internal/tfresource"
@@ -103,7 +103,7 @@ func resourceArchiveRuleCreate(ctx context.Context, d *schema.ResourceData, meta
 	id := archiveRuleCreateResourceID(analyzerName, ruleName)
 	input := accessanalyzer.CreateArchiveRuleInput{
 		AnalyzerName: aws.String(analyzerName),
-		ClientToken:  aws.String(create.UniqueId(ctx)),
+		ClientToken:  aws.String(idempotency.AutoToken),
 		RuleName:     aws.String(ruleName),
 	}
 
@@ -165,7 +165,7 @@ func resourceArchiveRuleUpdate(ctx context.Context, d *schema.ResourceData, meta
 
 	input := accessanalyzer.UpdateArchiveRuleInput{
 		AnalyzerName: aws.String(analyzerName),
-		ClientToken:  aws.String(create.UniqueId(ctx)),
+		ClientToken:  aws.String(idempotency.AutoToken),
 		RuleName:     aws.String(ruleName),
 	}
 
@@ -196,7 +196,7 @@ func resourceArchiveRuleDelete(ctx context.Context, d *schema.ResourceData, meta
 	log.Printf("[INFO] Deleting IAM Access Analyzer Archive Rule: %s", d.Id())
 	input := accessanalyzer.DeleteArchiveRuleInput{
 		AnalyzerName: aws.String(analyzerName),
-		ClientToken:  aws.String(create.UniqueId(ctx)),
+		ClientToken:  aws.String(idempotency.AutoToken),
 		RuleName:     aws.String(ruleName),
 	}
 	_, err = conn.DeleteArchiveRule(ctx, &input)

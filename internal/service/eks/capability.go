@@ -25,7 +25,6 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
-	"github.com/hashicorp/terraform-provider-aws/internal/create"
 	"github.com/hashicorp/terraform-provider-aws/internal/enum"
 	"github.com/hashicorp/terraform-provider-aws/internal/errs"
 	"github.com/hashicorp/terraform-provider-aws/internal/errs/fwdiag"
@@ -34,6 +33,7 @@ import (
 	fwflex "github.com/hashicorp/terraform-provider-aws/internal/framework/flex"
 	fwtypes "github.com/hashicorp/terraform-provider-aws/internal/framework/types"
 	fwvalidators "github.com/hashicorp/terraform-provider-aws/internal/framework/validators"
+	"github.com/hashicorp/terraform-provider-aws/internal/idempotency"
 	"github.com/hashicorp/terraform-provider-aws/internal/retry"
 	tftags "github.com/hashicorp/terraform-provider-aws/internal/tags"
 	"github.com/hashicorp/terraform-provider-aws/internal/tfresource"
@@ -252,7 +252,7 @@ func (r *capabilityResource) Create(ctx context.Context, request resource.Create
 	}
 
 	// Additional fields.
-	input.ClientRequestToken = aws.String(create.UniqueId(ctx))
+	input.ClientRequestToken = aws.String(idempotency.AutoToken)
 	input.Tags = getTagsIn(ctx)
 
 	_, err := conn.CreateCapability(ctx, &input)
@@ -351,7 +351,7 @@ func (r *capabilityResource) Update(ctx context.Context, request resource.Update
 		}
 
 		// Additional fields.
-		input.ClientRequestToken = aws.String(create.UniqueId(ctx))
+		input.ClientRequestToken = aws.String(idempotency.AutoToken)
 
 		// argo_cd block can only be modified in-place (not added or removed).
 		var oldConfiguration, newConfiguration awstypes.CapabilityConfigurationRequest

@@ -15,9 +15,9 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-provider-aws/internal/conns"
-	"github.com/hashicorp/terraform-provider-aws/internal/create"
 	"github.com/hashicorp/terraform-provider-aws/internal/errs"
 	"github.com/hashicorp/terraform-provider-aws/internal/errs/sdkdiag"
+	"github.com/hashicorp/terraform-provider-aws/internal/idempotency"
 	"github.com/hashicorp/terraform-provider-aws/internal/retry"
 	tftags "github.com/hashicorp/terraform-provider-aws/internal/tags"
 	"github.com/hashicorp/terraform-provider-aws/names"
@@ -69,7 +69,7 @@ func resourcePublicDNSNamespaceCreate(ctx context.Context, d *schema.ResourceDat
 
 	name := d.Get(names.AttrName).(string)
 	input := &servicediscovery.CreatePublicDnsNamespaceInput{
-		CreatorRequestId: aws.String(create.UniqueId(ctx)),
+		CreatorRequestId: aws.String(idempotency.AutoToken),
 		Name:             aws.String(name),
 		Tags:             getTagsIn(ctx),
 	}
@@ -134,7 +134,7 @@ func resourcePublicDNSNamespaceUpdate(ctx context.Context, d *schema.ResourceDat
 			Namespace: &awstypes.PublicDnsNamespaceChange{
 				Description: aws.String(d.Get(names.AttrDescription).(string)),
 			},
-			UpdaterRequestId: aws.String(create.UniqueId(ctx)),
+			UpdaterRequestId: aws.String(idempotency.AutoToken),
 		}
 
 		output, err := conn.UpdatePublicDnsNamespace(ctx, input)

@@ -25,13 +25,13 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-provider-aws/internal/conns"
-	"github.com/hashicorp/terraform-provider-aws/internal/create"
 	"github.com/hashicorp/terraform-provider-aws/internal/enum"
 	"github.com/hashicorp/terraform-provider-aws/internal/errs"
 	"github.com/hashicorp/terraform-provider-aws/internal/errs/fwdiag"
 	"github.com/hashicorp/terraform-provider-aws/internal/framework"
 	fwflex "github.com/hashicorp/terraform-provider-aws/internal/framework/flex"
 	fwtypes "github.com/hashicorp/terraform-provider-aws/internal/framework/types"
+	"github.com/hashicorp/terraform-provider-aws/internal/idempotency"
 	"github.com/hashicorp/terraform-provider-aws/internal/retry"
 	tfec2 "github.com/hashicorp/terraform-provider-aws/internal/service/ec2"
 	"github.com/hashicorp/terraform-provider-aws/internal/smerr"
@@ -128,7 +128,7 @@ func (r *vpcEndpointResource) Create(ctx context.Context, req resource.CreateReq
 		return
 	}
 
-	input.ClientToken = aws.String(create.UniqueId(ctx))
+	input.ClientToken = aws.String(idempotency.AutoToken)
 
 	output, err := conn.CreateVpcEndpoint(ctx, input)
 	if err != nil {
@@ -228,7 +228,7 @@ func (r *vpcEndpointResource) Update(ctx context.Context, req resource.UpdateReq
 	conn := r.Meta().OpenSearchServerlessClient(ctx)
 
 	input := &opensearchserverless.UpdateVpcEndpointInput{
-		ClientToken: aws.String(create.UniqueId(ctx)),
+		ClientToken: aws.String(idempotency.AutoToken),
 		Id:          fwflex.StringFromFramework(ctx, new.ID),
 	}
 
@@ -301,7 +301,7 @@ func (r *vpcEndpointResource) Delete(ctx context.Context, req resource.DeleteReq
 	conn := r.Meta().OpenSearchServerlessClient(ctx)
 
 	_, err := conn.DeleteVpcEndpoint(ctx, &opensearchserverless.DeleteVpcEndpointInput{
-		ClientToken: aws.String(create.UniqueId(ctx)),
+		ClientToken: aws.String(idempotency.AutoToken),
 		Id:          fwflex.StringFromFramework(ctx, data.ID),
 	})
 

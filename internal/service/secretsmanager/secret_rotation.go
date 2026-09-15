@@ -19,8 +19,8 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 	"github.com/hashicorp/terraform-provider-aws/internal/conns"
-	"github.com/hashicorp/terraform-provider-aws/internal/create"
 	"github.com/hashicorp/terraform-provider-aws/internal/errs/sdkdiag"
+	"github.com/hashicorp/terraform-provider-aws/internal/idempotency"
 	"github.com/hashicorp/terraform-provider-aws/internal/retry"
 	"github.com/hashicorp/terraform-provider-aws/internal/tfresource"
 	"github.com/hashicorp/terraform-provider-aws/internal/verify"
@@ -150,7 +150,7 @@ func resourceSecretRotationCreate(ctx context.Context, d *schema.ResourceData, m
 	}
 
 	input := secretsmanager.RotateSecretInput{
-		ClientRequestToken: aws.String(create.UniqueId(ctx)), // Needed because we're handling our own retries
+		ClientRequestToken: aws.String(idempotency.AutoToken), // Needed because we're handling our own retries
 		RotateImmediately:  aws.Bool(d.Get("rotate_immediately").(bool)),
 		RotationRules:      expandRotationRulesType(d.Get("rotation_rules").([]any)),
 		SecretId:           aws.String(secretID),
@@ -242,7 +242,7 @@ func resourceSecretRotationUpdate(ctx context.Context, d *schema.ResourceData, m
 		}
 
 		input := secretsmanager.RotateSecretInput{
-			ClientRequestToken: aws.String(create.UniqueId(ctx)), // Needed because we're handling our own retries
+			ClientRequestToken: aws.String(idempotency.AutoToken), // Needed because we're handling our own retries
 			RotateImmediately:  aws.Bool(d.Get("rotate_immediately").(bool)),
 			RotationRules:      expandRotationRulesType(d.Get("rotation_rules").([]any)),
 			SecretId:           aws.String(secretID),

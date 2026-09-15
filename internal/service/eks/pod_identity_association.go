@@ -21,13 +21,13 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/tfsdk"
 	"github.com/hashicorp/terraform-plugin-framework/types"
-	"github.com/hashicorp/terraform-provider-aws/internal/create"
 	"github.com/hashicorp/terraform-provider-aws/internal/errs"
 	"github.com/hashicorp/terraform-provider-aws/internal/errs/fwdiag"
 	intflex "github.com/hashicorp/terraform-provider-aws/internal/flex"
 	"github.com/hashicorp/terraform-provider-aws/internal/framework"
 	fwflex "github.com/hashicorp/terraform-provider-aws/internal/framework/flex"
 	fwtypes "github.com/hashicorp/terraform-provider-aws/internal/framework/types"
+	"github.com/hashicorp/terraform-provider-aws/internal/idempotency"
 	"github.com/hashicorp/terraform-provider-aws/internal/retry"
 	tftags "github.com/hashicorp/terraform-provider-aws/internal/tags"
 	"github.com/hashicorp/terraform-provider-aws/internal/tfresource"
@@ -148,7 +148,7 @@ func (r *podIdentityAssociationResource) Create(ctx context.Context, request res
 	}
 
 	// Additional fields.
-	input.ClientRequestToken = aws.String(create.UniqueId(ctx))
+	input.ClientRequestToken = aws.String(idempotency.AutoToken)
 	input.Tags = getTagsIn(ctx)
 
 	outputRaw, err := tfresource.RetryWhenIsAErrorMessageContains[any, *awstypes.InvalidParameterException](ctx, propagationTimeout, func(ctx context.Context) (any, error) {
@@ -230,7 +230,7 @@ func (r *podIdentityAssociationResource) Update(ctx context.Context, request res
 		}
 
 		// Set values for unknowns.
-		input.ClientRequestToken = aws.String(create.UniqueId(ctx))
+		input.ClientRequestToken = aws.String(idempotency.AutoToken)
 
 		outputRaw, err := tfresource.RetryWhenIsAErrorMessageContains[any, *awstypes.InvalidParameterException](ctx, propagationTimeout, func(ctx context.Context) (any, error) {
 			return conn.UpdatePodIdentityAssociation(ctx, &input)

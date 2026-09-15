@@ -18,10 +18,10 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 	"github.com/hashicorp/terraform-provider-aws/internal/conns"
-	"github.com/hashicorp/terraform-provider-aws/internal/create"
 	"github.com/hashicorp/terraform-provider-aws/internal/enum"
 	"github.com/hashicorp/terraform-provider-aws/internal/errs"
 	"github.com/hashicorp/terraform-provider-aws/internal/errs/sdkdiag"
+	"github.com/hashicorp/terraform-provider-aws/internal/idempotency"
 	"github.com/hashicorp/terraform-provider-aws/internal/retry"
 	"github.com/hashicorp/terraform-provider-aws/internal/tfresource"
 	"github.com/hashicorp/terraform-provider-aws/internal/verify"
@@ -158,7 +158,7 @@ func resourceEndpointGroupCreate(ctx context.Context, d *schema.ResourceData, me
 
 	input := &globalaccelerator.CreateEndpointGroupInput{
 		EndpointGroupRegion: aws.String(meta.(*conns.AWSClient).Region(ctx)),
-		IdempotencyToken:    aws.String(create.UniqueId(ctx)),
+		IdempotencyToken:    aws.String(idempotency.AutoToken),
 		ListenerArn:         aws.String(d.Get("listener_arn").(string)),
 	}
 

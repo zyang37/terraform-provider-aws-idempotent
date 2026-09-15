@@ -23,6 +23,7 @@ import (
 	"github.com/hashicorp/terraform-provider-aws/internal/enum"
 	"github.com/hashicorp/terraform-provider-aws/internal/errs"
 	"github.com/hashicorp/terraform-provider-aws/internal/flex"
+	"github.com/hashicorp/terraform-provider-aws/internal/idempotency"
 	"github.com/hashicorp/terraform-provider-aws/internal/retry"
 	tftags "github.com/hashicorp/terraform-provider-aws/internal/tags"
 	"github.com/hashicorp/terraform-provider-aws/internal/tfresource"
@@ -745,7 +746,7 @@ func resourceChannelCreate(ctx context.Context, d *schema.ResourceData, meta any
 
 	in := &medialive.CreateChannelInput{
 		Name:      aws.String(d.Get(names.AttrName).(string)),
-		RequestId: aws.String(create.UniqueId(ctx)),
+		RequestId: aws.String(idempotency.AutoToken),
 		Tags:      getTagsIn(ctx),
 	}
 

@@ -18,10 +18,10 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 	"github.com/hashicorp/terraform-provider-aws/internal/conns"
-	"github.com/hashicorp/terraform-provider-aws/internal/create"
 	"github.com/hashicorp/terraform-provider-aws/internal/enum"
 	"github.com/hashicorp/terraform-provider-aws/internal/errs"
 	"github.com/hashicorp/terraform-provider-aws/internal/errs/sdkdiag"
+	"github.com/hashicorp/terraform-provider-aws/internal/idempotency"
 	"github.com/hashicorp/terraform-provider-aws/internal/retry"
 	tftags "github.com/hashicorp/terraform-provider-aws/internal/tags"
 	"github.com/hashicorp/terraform-provider-aws/internal/tfresource"
@@ -122,7 +122,7 @@ func resourceEnvironmentEC2Create(ctx context.Context, d *schema.ResourceData, m
 
 	name := d.Get(names.AttrName).(string)
 	input := &cloud9.CreateEnvironmentEC2Input{
-		ClientRequestToken: aws.String(create.UniqueId(ctx)),
+		ClientRequestToken: aws.String(idempotency.AutoToken),
 		ConnectionType:     types.ConnectionType(d.Get("connection_type").(string)),
 		ImageId:            aws.String(d.Get("image_id").(string)),
 		InstanceType:       aws.String(d.Get(names.AttrInstanceType).(string)),

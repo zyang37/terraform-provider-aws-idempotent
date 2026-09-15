@@ -21,6 +21,7 @@ import (
 	"github.com/hashicorp/terraform-provider-aws/internal/conns/apicall"
 	"github.com/hashicorp/terraform-provider-aws/internal/errs"
 	"github.com/hashicorp/terraform-provider-aws/internal/errs/sdkdiag"
+	"github.com/hashicorp/terraform-provider-aws/internal/idempotency"
 	tftags "github.com/hashicorp/terraform-provider-aws/internal/tags"
 	"github.com/hashicorp/terraform-provider-aws/internal/tags/tagpolicy"
 	inttypes "github.com/hashicorp/terraform-provider-aws/internal/types"
@@ -238,6 +239,28 @@ func (c *Config) ConfigureProvider(ctx context.Context, client *AWSClient) (*AWS
 	// registration covers every service. The middleware is a no-op unless a
 	// *apicall.Recorder is attached to the request context.
 	cfg.APIOptions = append(cfg.APIOptions, apicall.Middleware())
+
+	// Register the idempotency middleware (internal/idempotency) the same
+	// way: every service client built from this aws.Config gets
+	// deterministic, journal-backed tokens for every operation the
+	// generated table (docs/SUPPORTED_APIS.md) knows about, instead of a
+	// fresh random one on every process start. See
+	// idempotency.Middleware's doc comment and docs/DEV_PLAN.md.
+	//
+	// A journal open failure degrades to ordinary (non-deterministic)
+	// behavior for this provider instance rather than failing
+	// configuration entirely -- see GlobalStore's doc comment -- so a
+	// misconfigured or unwritable working directory does not turn an
+	// unrelated feature into a hard provider-configure failure.
+	if idempotency.Enabled() {
+		if store, err := idempotency.GlobalStore(ctx); err != nil {
+			tflog.Warn(ctx, "idempotency: could not open journal; continuing without deterministic AWS API tokens", map[string]any{
+				"error": err.Error(),
+			})
+		} else {
+			cfg.APIOptions = append(cfg.APIOptions, idempotency.Middleware(store, accountID))
+		}
+	}
 
 	// Used for lazy-loading AWS API clients.
 	client.awsConfig = &cfg

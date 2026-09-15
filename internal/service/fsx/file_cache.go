@@ -19,11 +19,11 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 	"github.com/hashicorp/terraform-provider-aws/internal/conns"
-	"github.com/hashicorp/terraform-provider-aws/internal/create"
 	"github.com/hashicorp/terraform-provider-aws/internal/enum"
 	"github.com/hashicorp/terraform-provider-aws/internal/errs"
 	"github.com/hashicorp/terraform-provider-aws/internal/errs/sdkdiag"
 	"github.com/hashicorp/terraform-provider-aws/internal/flex"
+	"github.com/hashicorp/terraform-provider-aws/internal/idempotency"
 	"github.com/hashicorp/terraform-provider-aws/internal/retry"
 	tfslices "github.com/hashicorp/terraform-provider-aws/internal/slices"
 	tftags "github.com/hashicorp/terraform-provider-aws/internal/tags"
@@ -301,7 +301,7 @@ func resourceFileCacheCreate(ctx context.Context, d *schema.ResourceData, meta a
 	conn := meta.(*conns.AWSClient).FSxClient(ctx)
 
 	input := &fsx.CreateFileCacheInput{
-		ClientRequestToken:   aws.String(create.UniqueId(ctx)),
+		ClientRequestToken:   aws.String(idempotency.AutoToken),
 		FileCacheType:        awstypes.FileCacheType(d.Get("file_cache_type").(string)),
 		FileCacheTypeVersion: aws.String(d.Get("file_cache_type_version").(string)),
 		StorageCapacity:      aws.Int32(int32(d.Get("storage_capacity").(int))),
@@ -398,7 +398,7 @@ func resourceFileCacheUpdate(ctx context.Context, d *schema.ResourceData, meta a
 
 	if d.HasChangesExcept(names.AttrTags, names.AttrTagsAll) {
 		input := &fsx.UpdateFileCacheInput{
-			ClientRequestToken:  aws.String(create.UniqueId(ctx)),
+			ClientRequestToken:  aws.String(idempotency.AutoToken),
 			FileCacheId:         aws.String(d.Id()),
 			LustreConfiguration: &awstypes.UpdateFileCacheLustreConfiguration{},
 		}
@@ -427,7 +427,7 @@ func resourceFileCacheDelete(ctx context.Context, d *schema.ResourceData, meta a
 
 	log.Printf("[INFO] Deleting FSx FileCache: %s", d.Id())
 	_, err := conn.DeleteFileCache(ctx, &fsx.DeleteFileCacheInput{
-		ClientRequestToken: aws.String(create.UniqueId(ctx)),
+		ClientRequestToken: aws.String(idempotency.AutoToken),
 		FileCacheId:        aws.String(d.Id()),
 	})
 

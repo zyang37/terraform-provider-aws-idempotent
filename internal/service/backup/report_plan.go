@@ -17,10 +17,10 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 	"github.com/hashicorp/terraform-provider-aws/internal/conns"
-	"github.com/hashicorp/terraform-provider-aws/internal/create"
 	"github.com/hashicorp/terraform-provider-aws/internal/errs"
 	"github.com/hashicorp/terraform-provider-aws/internal/errs/sdkdiag"
 	"github.com/hashicorp/terraform-provider-aws/internal/flex"
+	"github.com/hashicorp/terraform-provider-aws/internal/idempotency"
 	"github.com/hashicorp/terraform-provider-aws/internal/retry"
 	tftags "github.com/hashicorp/terraform-provider-aws/internal/tags"
 	"github.com/hashicorp/terraform-provider-aws/internal/tfresource"
@@ -153,7 +153,7 @@ func resourceReportPlanCreate(ctx context.Context, d *schema.ResourceData, meta 
 
 	name := d.Get(names.AttrName).(string)
 	input := &backup.CreateReportPlanInput{
-		IdempotencyToken:      aws.String(create.UniqueId(ctx)),
+		IdempotencyToken:      aws.String(idempotency.AutoToken),
 		ReportDeliveryChannel: expandReportDeliveryChannel(d.Get("report_delivery_channel").([]any)),
 		ReportPlanName:        aws.String(name),
 		ReportPlanTags:        getTagsIn(ctx),
@@ -216,7 +216,7 @@ func resourceReportPlanUpdate(ctx context.Context, d *schema.ResourceData, meta 
 
 	if d.HasChangesExcept(names.AttrTags, names.AttrTagsAll) {
 		input := &backup.UpdateReportPlanInput{
-			IdempotencyToken:      aws.String(create.UniqueId(ctx)),
+			IdempotencyToken:      aws.String(idempotency.AutoToken),
 			ReportDeliveryChannel: expandReportDeliveryChannel(d.Get("report_delivery_channel").([]any)),
 			ReportPlanDescription: aws.String(d.Get(names.AttrDescription).(string)),
 			ReportPlanName:        aws.String(d.Id()),

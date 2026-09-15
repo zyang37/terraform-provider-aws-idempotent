@@ -18,9 +18,9 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 	"github.com/hashicorp/terraform-provider-aws/internal/conns"
-	"github.com/hashicorp/terraform-provider-aws/internal/create"
 	"github.com/hashicorp/terraform-provider-aws/internal/enum"
 	"github.com/hashicorp/terraform-provider-aws/internal/errs/sdkdiag"
+	"github.com/hashicorp/terraform-provider-aws/internal/idempotency"
 	"github.com/hashicorp/terraform-provider-aws/internal/retry"
 	tftags "github.com/hashicorp/terraform-provider-aws/internal/tags"
 	"github.com/hashicorp/terraform-provider-aws/internal/tfresource"
@@ -115,7 +115,7 @@ func resourceWorkflowCreate(ctx context.Context, d *schema.ResourceData, meta an
 
 	name := d.Get(names.AttrName).(string)
 	input := &imagebuilder.CreateWorkflowInput{
-		ClientToken:     aws.String(create.UniqueId(ctx)),
+		ClientToken:     aws.String(idempotency.AutoToken),
 		Name:            aws.String(name),
 		SemanticVersion: aws.String(d.Get(names.AttrVersion).(string)),
 		Type:            awstypes.WorkflowType(d.Get(names.AttrType).(string)),

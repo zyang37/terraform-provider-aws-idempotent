@@ -17,10 +17,10 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 	"github.com/hashicorp/terraform-provider-aws/internal/conns"
-	"github.com/hashicorp/terraform-provider-aws/internal/create"
 	"github.com/hashicorp/terraform-provider-aws/internal/enum"
 	"github.com/hashicorp/terraform-provider-aws/internal/errs"
 	"github.com/hashicorp/terraform-provider-aws/internal/errs/sdkdiag"
+	"github.com/hashicorp/terraform-provider-aws/internal/idempotency"
 	"github.com/hashicorp/terraform-provider-aws/internal/tfresource"
 	"github.com/hashicorp/terraform-provider-aws/names"
 )
@@ -132,7 +132,7 @@ func resourceProvisioningArtifactCreate(ctx context.Context, d *schema.ResourceD
 	parameters[names.AttrType] = d.Get(names.AttrType)
 
 	input := &servicecatalog.CreateProvisioningArtifactInput{
-		IdempotencyToken: aws.String(create.UniqueId(ctx)),
+		IdempotencyToken: aws.String(idempotency.AutoToken),
 		Parameters:       expandProvisioningArtifactParameters(parameters),
 		ProductId:        aws.String(d.Get("product_id").(string)),
 	}

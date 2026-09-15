@@ -18,9 +18,9 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 	"github.com/hashicorp/terraform-provider-aws/internal/conns"
-	"github.com/hashicorp/terraform-provider-aws/internal/create"
 	"github.com/hashicorp/terraform-provider-aws/internal/enum"
 	"github.com/hashicorp/terraform-provider-aws/internal/errs/sdkdiag"
+	"github.com/hashicorp/terraform-provider-aws/internal/idempotency"
 	"github.com/hashicorp/terraform-provider-aws/internal/retry"
 	tftags "github.com/hashicorp/terraform-provider-aws/internal/tags"
 	"github.com/hashicorp/terraform-provider-aws/internal/verify"
@@ -221,7 +221,7 @@ func resourceVerifiedAccessTrustProviderCreate(ctx context.Context, d *schema.Re
 	conn := meta.(*conns.AWSClient).EC2Client(ctx)
 
 	input := ec2.CreateVerifiedAccessTrustProviderInput{
-		ClientToken:         aws.String(create.UniqueId(ctx)),
+		ClientToken:         aws.String(idempotency.AutoToken),
 		PolicyReferenceName: aws.String(d.Get("policy_reference_name").(string)),
 		TagSpecifications:   getTagSpecificationsIn(ctx, awstypes.ResourceTypeVerifiedAccessTrustProvider),
 		TrustProviderType:   awstypes.TrustProviderType(d.Get("trust_provider_type").(string)),
@@ -324,7 +324,7 @@ func resourceVerifiedAccessTrustProviderUpdate(ctx context.Context, d *schema.Re
 
 	if d.HasChangesExcept(names.AttrTags, names.AttrTagsAll) {
 		input := ec2.ModifyVerifiedAccessTrustProviderInput{
-			ClientToken:                   aws.String(create.UniqueId(ctx)),
+			ClientToken:                   aws.String(idempotency.AutoToken),
 			VerifiedAccessTrustProviderId: aws.String(d.Id()),
 		}
 
@@ -360,7 +360,7 @@ func resourceVerifiedAccessTrustProviderDelete(ctx context.Context, d *schema.Re
 
 	log.Printf("[INFO] Deleting Verified Access Trust Provider: %s", d.Id())
 	input := ec2.DeleteVerifiedAccessTrustProviderInput{
-		ClientToken:                   aws.String(create.UniqueId(ctx)),
+		ClientToken:                   aws.String(idempotency.AutoToken),
 		VerifiedAccessTrustProviderId: aws.String(d.Id()),
 	}
 	_, err := conn.DeleteVerifiedAccessTrustProvider(ctx, &input)

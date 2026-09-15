@@ -18,11 +18,11 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 	"github.com/hashicorp/terraform-provider-aws/internal/conns"
-	"github.com/hashicorp/terraform-provider-aws/internal/create"
 	"github.com/hashicorp/terraform-provider-aws/internal/enum"
 	"github.com/hashicorp/terraform-provider-aws/internal/errs"
 	"github.com/hashicorp/terraform-provider-aws/internal/errs/sdkdiag"
 	"github.com/hashicorp/terraform-provider-aws/internal/flex"
+	"github.com/hashicorp/terraform-provider-aws/internal/idempotency"
 	"github.com/hashicorp/terraform-provider-aws/internal/retry"
 	tftags "github.com/hashicorp/terraform-provider-aws/internal/tags"
 	"github.com/hashicorp/terraform-provider-aws/internal/tfresource"
@@ -125,7 +125,7 @@ func resourceServiceNetworkVPCAssociationCreate(ctx context.Context, d *schema.R
 	conn := meta.(*conns.AWSClient).VPCLatticeClient(ctx)
 
 	input := vpclattice.CreateServiceNetworkVpcAssociationInput{
-		ClientToken:              aws.String(create.UniqueId(ctx)),
+		ClientToken:              aws.String(idempotency.AutoToken),
 		ServiceNetworkIdentifier: aws.String(d.Get("service_network_identifier").(string)),
 		Tags:                     getTagsIn(ctx),
 		VpcIdentifier:            aws.String(d.Get("vpc_identifier").(string)),

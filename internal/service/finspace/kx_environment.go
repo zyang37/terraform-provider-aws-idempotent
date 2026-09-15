@@ -21,6 +21,7 @@ import (
 	"github.com/hashicorp/terraform-provider-aws/internal/create"
 	"github.com/hashicorp/terraform-provider-aws/internal/enum"
 	"github.com/hashicorp/terraform-provider-aws/internal/errs"
+	"github.com/hashicorp/terraform-provider-aws/internal/idempotency"
 	"github.com/hashicorp/terraform-provider-aws/internal/retry"
 	tftags "github.com/hashicorp/terraform-provider-aws/internal/tags"
 	"github.com/hashicorp/terraform-provider-aws/internal/tfresource"
@@ -214,7 +215,7 @@ func resourceKxEnvironmentCreate(ctx context.Context, d *schema.ResourceData, me
 
 	in := &finspace.CreateKxEnvironmentInput{
 		Name:        aws.String(d.Get(names.AttrName).(string)),
-		ClientToken: aws.String(create.UniqueId(ctx)),
+		ClientToken: aws.String(idempotency.AutoToken),
 	}
 
 	if v, ok := d.GetOk(names.AttrDescription); ok {
@@ -359,12 +360,12 @@ func resourceKxEnvironmentDelete(ctx context.Context, d *schema.ResourceData, me
 func updateKxEnvironmentNetwork(ctx context.Context, d *schema.ResourceData, client *finspace.Client) error {
 	transitGatewayConfigIn := &finspace.UpdateKxEnvironmentNetworkInput{
 		EnvironmentId: aws.String(d.Id()),
-		ClientToken:   aws.String(create.UniqueId(ctx)),
+		ClientToken:   aws.String(idempotency.AutoToken),
 	}
 
 	customDnsConfigIn := &finspace.UpdateKxEnvironmentNetworkInput{
 		EnvironmentId: aws.String(d.Id()),
-		ClientToken:   aws.String(create.UniqueId(ctx)),
+		ClientToken:   aws.String(idempotency.AutoToken),
 	}
 
 	updateTransitGatewayConfig := false

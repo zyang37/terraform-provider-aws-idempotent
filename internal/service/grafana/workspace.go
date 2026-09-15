@@ -16,11 +16,11 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-provider-aws/internal/conns"
-	"github.com/hashicorp/terraform-provider-aws/internal/create"
 	"github.com/hashicorp/terraform-provider-aws/internal/enum"
 	"github.com/hashicorp/terraform-provider-aws/internal/errs"
 	"github.com/hashicorp/terraform-provider-aws/internal/errs/sdkdiag"
 	"github.com/hashicorp/terraform-provider-aws/internal/flex"
+	"github.com/hashicorp/terraform-provider-aws/internal/idempotency"
 	"github.com/hashicorp/terraform-provider-aws/internal/retry"
 	"github.com/hashicorp/terraform-provider-aws/internal/sdkv2"
 	tftags "github.com/hashicorp/terraform-provider-aws/internal/tags"
@@ -193,7 +193,7 @@ func resourceWorkspaceCreate(ctx context.Context, d *schema.ResourceData, meta a
 	input := grafana.CreateWorkspaceInput{
 		AccountAccessType:       awstypes.AccountAccessType(d.Get("account_access_type").(string)),
 		AuthenticationProviders: flex.ExpandStringyValueList[awstypes.AuthenticationProviderTypes](d.Get("authentication_providers").([]any)),
-		ClientToken:             aws.String(create.UniqueId(ctx)),
+		ClientToken:             aws.String(idempotency.AutoToken),
 		PermissionType:          awstypes.PermissionType(d.Get("permission_type").(string)),
 		Tags:                    getTagsIn(ctx),
 	}

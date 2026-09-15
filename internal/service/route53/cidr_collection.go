@@ -22,11 +22,11 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
-	"github.com/hashicorp/terraform-provider-aws/internal/create"
 	"github.com/hashicorp/terraform-provider-aws/internal/errs"
 	"github.com/hashicorp/terraform-provider-aws/internal/errs/fwdiag"
 	"github.com/hashicorp/terraform-provider-aws/internal/framework"
 	fwflex "github.com/hashicorp/terraform-provider-aws/internal/framework/flex"
+	"github.com/hashicorp/terraform-provider-aws/internal/idempotency"
 	"github.com/hashicorp/terraform-provider-aws/internal/retry"
 	tfslices "github.com/hashicorp/terraform-provider-aws/internal/slices"
 	"github.com/hashicorp/terraform-provider-aws/internal/tfresource"
@@ -79,7 +79,7 @@ func (r *cidrCollectionResource) Create(ctx context.Context, request resource.Cr
 
 	name := data.Name.ValueString()
 	input := &route53.CreateCidrCollectionInput{
-		CallerReference: aws.String(create.UniqueId(ctx)),
+		CallerReference: aws.String(idempotency.AutoToken),
 		Name:            aws.String(name),
 	}
 

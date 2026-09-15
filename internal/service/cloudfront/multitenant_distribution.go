@@ -28,11 +28,11 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
-	"github.com/hashicorp/terraform-provider-aws/internal/create"
 	"github.com/hashicorp/terraform-provider-aws/internal/errs"
 	"github.com/hashicorp/terraform-provider-aws/internal/framework"
 	fwflex "github.com/hashicorp/terraform-provider-aws/internal/framework/flex"
 	fwtypes "github.com/hashicorp/terraform-provider-aws/internal/framework/types"
+	"github.com/hashicorp/terraform-provider-aws/internal/idempotency"
 	"github.com/hashicorp/terraform-provider-aws/internal/retry"
 	tftags "github.com/hashicorp/terraform-provider-aws/internal/tags"
 	"github.com/hashicorp/terraform-provider-aws/internal/tfresource"
@@ -746,7 +746,7 @@ func (r *multiTenantDistributionResource) Create(ctx context.Context, request re
 	distributionConfig.ConnectionMode = awstypes.ConnectionModeTenantOnly
 
 	// Set required computed fields that AutoFlex can't handle
-	distributionConfig.CallerReference = aws.String(create.UniqueId(ctx))
+	distributionConfig.CallerReference = aws.String(idempotency.AutoToken)
 
 	input := cloudfront.CreateDistributionWithTagsInput{
 		DistributionConfigWithTags: &awstypes.DistributionConfigWithTags{

@@ -24,12 +24,12 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/tfsdk"
 	"github.com/hashicorp/terraform-plugin-framework/types"
-	"github.com/hashicorp/terraform-provider-aws/internal/create"
 	"github.com/hashicorp/terraform-provider-aws/internal/errs"
 	"github.com/hashicorp/terraform-provider-aws/internal/errs/fwdiag"
 	"github.com/hashicorp/terraform-provider-aws/internal/framework"
 	fwflex "github.com/hashicorp/terraform-provider-aws/internal/framework/flex"
 	fwtypes "github.com/hashicorp/terraform-provider-aws/internal/framework/types"
+	"github.com/hashicorp/terraform-provider-aws/internal/idempotency"
 	"github.com/hashicorp/terraform-provider-aws/internal/retry"
 	"github.com/hashicorp/terraform-provider-aws/internal/smerr"
 	"github.com/hashicorp/terraform-provider-aws/names"
@@ -114,7 +114,7 @@ func (r *accessPolicyResource) Create(ctx context.Context, request resource.Crea
 	}
 
 	// Additional fields.
-	input.ClientToken = aws.String(create.UniqueId(ctx))
+	input.ClientToken = aws.String(idempotency.AutoToken)
 
 	output, err := conn.CreateAccessPolicy(ctx, &input)
 
@@ -182,7 +182,7 @@ func (r *accessPolicyResource) Update(ctx context.Context, request resource.Upda
 		}
 
 		// Additional fields.
-		input.ClientToken = aws.String(create.UniqueId(ctx))
+		input.ClientToken = aws.String(idempotency.AutoToken)
 		input.PolicyVersion = old.PolicyVersion.ValueStringPointer() // use policy version from state since it can be recalculated on update
 
 		output, err := conn.UpdateAccessPolicy(ctx, &input)
@@ -210,7 +210,7 @@ func (r *accessPolicyResource) Delete(ctx context.Context, request resource.Dele
 
 	name := fwflex.StringValueFromFramework(ctx, data.Name)
 	input := opensearchserverless.DeleteAccessPolicyInput{
-		ClientToken: aws.String(create.UniqueId(ctx)),
+		ClientToken: aws.String(idempotency.AutoToken),
 		Name:        aws.String(name),
 		Type:        data.Type.ValueEnum(),
 	}

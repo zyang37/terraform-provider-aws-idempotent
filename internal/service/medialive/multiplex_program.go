@@ -32,6 +32,7 @@ import (
 	"github.com/hashicorp/terraform-provider-aws/internal/framework"
 	fwflex "github.com/hashicorp/terraform-provider-aws/internal/framework/flex"
 	fwtypes "github.com/hashicorp/terraform-provider-aws/internal/framework/types"
+	"github.com/hashicorp/terraform-provider-aws/internal/idempotency"
 	"github.com/hashicorp/terraform-provider-aws/internal/retry"
 	"github.com/hashicorp/terraform-provider-aws/internal/tfresource"
 	inttypes "github.com/hashicorp/terraform-provider-aws/internal/types"
@@ -186,7 +187,7 @@ func (m *multiplexProgramResource) Create(ctx context.Context, req resource.Crea
 	}
 
 	input := medialive.CreateMultiplexProgramInput{
-		RequestId: aws.String(create.UniqueId(ctx)),
+		RequestId: aws.String(idempotency.AutoToken),
 	}
 	resp.Diagnostics.Append(fwflex.Expand(ctx, plan, &input)...)
 	if resp.Diagnostics.HasError() {

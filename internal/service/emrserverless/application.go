@@ -20,11 +20,11 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 	"github.com/hashicorp/terraform-provider-aws/internal/conns"
-	"github.com/hashicorp/terraform-provider-aws/internal/create"
 	"github.com/hashicorp/terraform-provider-aws/internal/enum"
 	"github.com/hashicorp/terraform-provider-aws/internal/errs"
 	"github.com/hashicorp/terraform-provider-aws/internal/errs/sdkdiag"
 	"github.com/hashicorp/terraform-provider-aws/internal/flex"
+	"github.com/hashicorp/terraform-provider-aws/internal/idempotency"
 	"github.com/hashicorp/terraform-provider-aws/internal/retry"
 	tftags "github.com/hashicorp/terraform-provider-aws/internal/tags"
 	"github.com/hashicorp/terraform-provider-aws/internal/tfresource"
@@ -427,7 +427,7 @@ func resourceApplicationCreate(ctx context.Context, d *schema.ResourceData, meta
 
 	name := d.Get(names.AttrName).(string)
 	input := emrserverless.CreateApplicationInput{
-		ClientToken:  aws.String(create.UniqueId(ctx)),
+		ClientToken:  aws.String(idempotency.AutoToken),
 		ReleaseLabel: aws.String(d.Get("release_label").(string)),
 		Name:         aws.String(name),
 		Tags:         getTagsIn(ctx),
@@ -575,7 +575,7 @@ func resourceApplicationUpdate(ctx context.Context, d *schema.ResourceData, meta
 	if d.HasChangesExcept(names.AttrTags, names.AttrTagsAll) {
 		input := emrserverless.UpdateApplicationInput{
 			ApplicationId: aws.String(d.Id()),
-			ClientToken:   aws.String(create.UniqueId(ctx)),
+			ClientToken:   aws.String(idempotency.AutoToken),
 		}
 
 		if v, ok := d.GetOk("architecture"); ok {

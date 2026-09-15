@@ -17,13 +17,13 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/route53resolver"
 	awstypes "github.com/aws/aws-sdk-go-v2/service/route53resolver/types"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
-	sdkid "github.com/hashicorp/terraform-plugin-sdk/v2/helper/id"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 	"github.com/hashicorp/terraform-provider-aws/internal/conns"
 	"github.com/hashicorp/terraform-provider-aws/internal/enum"
 	"github.com/hashicorp/terraform-provider-aws/internal/errs"
 	"github.com/hashicorp/terraform-provider-aws/internal/errs/sdkdiag"
+	"github.com/hashicorp/terraform-provider-aws/internal/idempotency"
 	"github.com/hashicorp/terraform-provider-aws/internal/retry"
 	tftags "github.com/hashicorp/terraform-provider-aws/internal/tags"
 	"github.com/hashicorp/terraform-provider-aws/internal/tfresource"
@@ -129,7 +129,7 @@ func resourceRuleCreate(ctx context.Context, d *schema.ResourceData, meta any) d
 	conn := meta.(*conns.AWSClient).Route53ResolverClient(ctx)
 
 	input := &route53resolver.CreateResolverRuleInput{
-		CreatorRequestId: aws.String(sdkid.PrefixedUniqueId("tf-r53-resolver-rule-")),
+		CreatorRequestId: aws.String(idempotency.AutoToken),
 		DomainName:       aws.String(d.Get(names.AttrDomainName).(string)),
 		RuleType:         awstypes.RuleTypeOption(d.Get("rule_type").(string)),
 		Tags:             getTagsIn(ctx),

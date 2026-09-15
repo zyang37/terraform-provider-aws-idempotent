@@ -24,6 +24,7 @@ import (
 	"github.com/hashicorp/terraform-provider-aws/internal/framework"
 	"github.com/hashicorp/terraform-provider-aws/internal/framework/flex"
 	fwtypes "github.com/hashicorp/terraform-provider-aws/internal/framework/types"
+	"github.com/hashicorp/terraform-provider-aws/internal/idempotency"
 	"github.com/hashicorp/terraform-provider-aws/internal/retry"
 	tftags "github.com/hashicorp/terraform-provider-aws/internal/tags"
 	"github.com/hashicorp/terraform-provider-aws/internal/tfresource"
@@ -108,7 +109,7 @@ func (r *profilingGroupResource) Create(ctx context.Context, req resource.Create
 	}
 
 	in.ProfilingGroupName = flex.StringFromFramework(ctx, plan.Name)
-	in.ClientToken = aws.String(create.UniqueId(ctx))
+	in.ClientToken = aws.String(idempotency.AutoToken)
 	in.Tags = getTagsIn(ctx)
 
 	out, err := conn.CreateProfilingGroup(ctx, in)

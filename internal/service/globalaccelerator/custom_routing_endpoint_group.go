@@ -17,11 +17,11 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 	"github.com/hashicorp/terraform-provider-aws/internal/conns"
-	"github.com/hashicorp/terraform-provider-aws/internal/create"
 	"github.com/hashicorp/terraform-provider-aws/internal/enum"
 	"github.com/hashicorp/terraform-provider-aws/internal/errs"
 	"github.com/hashicorp/terraform-provider-aws/internal/errs/sdkdiag"
 	"github.com/hashicorp/terraform-provider-aws/internal/flex"
+	"github.com/hashicorp/terraform-provider-aws/internal/idempotency"
 	"github.com/hashicorp/terraform-provider-aws/internal/retry"
 	"github.com/hashicorp/terraform-provider-aws/internal/tfresource"
 	"github.com/hashicorp/terraform-provider-aws/internal/verify"
@@ -115,7 +115,7 @@ func resourceCustomRoutingEndpointGroupCreate(ctx context.Context, d *schema.Res
 	input := &globalaccelerator.CreateCustomRoutingEndpointGroupInput{
 		DestinationConfigurations: expandCustomRoutingDestinationConfigurations(d.Get("destination_configuration").(*schema.Set).List()),
 		EndpointGroupRegion:       aws.String(meta.(*conns.AWSClient).Region(ctx)),
-		IdempotencyToken:          aws.String(create.UniqueId(ctx)),
+		IdempotencyToken:          aws.String(idempotency.AutoToken),
 		ListenerArn:               aws.String(d.Get("listener_arn").(string)),
 	}
 

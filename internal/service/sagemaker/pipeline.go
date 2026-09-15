@@ -17,9 +17,9 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 	"github.com/hashicorp/terraform-provider-aws/internal/conns"
-	"github.com/hashicorp/terraform-provider-aws/internal/create"
 	"github.com/hashicorp/terraform-provider-aws/internal/errs"
 	"github.com/hashicorp/terraform-provider-aws/internal/errs/sdkdiag"
+	"github.com/hashicorp/terraform-provider-aws/internal/idempotency"
 	"github.com/hashicorp/terraform-provider-aws/internal/retry"
 	tftags "github.com/hashicorp/terraform-provider-aws/internal/tags"
 	"github.com/hashicorp/terraform-provider-aws/internal/tfresource"
@@ -131,7 +131,7 @@ func resourcePipelineCreate(ctx context.Context, d *schema.ResourceData, meta an
 
 	name := d.Get("pipeline_name").(string)
 	input := &sagemaker.CreatePipelineInput{
-		ClientRequestToken:  aws.String(create.UniqueId(ctx)),
+		ClientRequestToken:  aws.String(idempotency.AutoToken),
 		PipelineDisplayName: aws.String(d.Get("pipeline_display_name").(string)),
 		PipelineName:        aws.String(name),
 		RoleArn:             aws.String(d.Get(names.AttrRoleARN).(string)),
@@ -243,7 +243,7 @@ func resourcePipelineDelete(ctx context.Context, d *schema.ResourceData, meta an
 
 	log.Printf("[DEBUG] Deleting SageMaker AI Pipeline: %s", d.Id())
 	_, err := conn.DeletePipeline(ctx, &sagemaker.DeletePipelineInput{
-		ClientRequestToken: aws.String(create.UniqueId(ctx)),
+		ClientRequestToken: aws.String(idempotency.AutoToken),
 		PipelineName:       aws.String(d.Id()),
 	})
 

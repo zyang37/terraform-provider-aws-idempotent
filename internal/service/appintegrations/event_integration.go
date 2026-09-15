@@ -17,9 +17,9 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 	"github.com/hashicorp/terraform-provider-aws/internal/conns"
-	"github.com/hashicorp/terraform-provider-aws/internal/create"
 	"github.com/hashicorp/terraform-provider-aws/internal/errs"
 	"github.com/hashicorp/terraform-provider-aws/internal/errs/sdkdiag"
+	"github.com/hashicorp/terraform-provider-aws/internal/idempotency"
 	tftags "github.com/hashicorp/terraform-provider-aws/internal/tags"
 	"github.com/hashicorp/terraform-provider-aws/names"
 )
@@ -89,7 +89,7 @@ func resourceEventIntegrationCreate(ctx context.Context, d *schema.ResourceData,
 
 	name := d.Get(names.AttrName).(string)
 	input := &appintegrations.CreateEventIntegrationInput{
-		ClientToken:    aws.String(create.UniqueId(ctx)),
+		ClientToken:    aws.String(idempotency.AutoToken),
 		EventBridgeBus: aws.String(d.Get("eventbridge_bus").(string)),
 		EventFilter:    expandEventFilter(d.Get("event_filter").([]any)),
 		Name:           aws.String(name),

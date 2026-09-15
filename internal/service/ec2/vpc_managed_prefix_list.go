@@ -19,8 +19,8 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 	"github.com/hashicorp/terraform-provider-aws/internal/conns"
-	"github.com/hashicorp/terraform-provider-aws/internal/create"
 	"github.com/hashicorp/terraform-provider-aws/internal/errs/sdkdiag"
+	"github.com/hashicorp/terraform-provider-aws/internal/idempotency"
 	"github.com/hashicorp/terraform-provider-aws/internal/retry"
 	tftags "github.com/hashicorp/terraform-provider-aws/internal/tags"
 	"github.com/hashicorp/terraform-provider-aws/names"
@@ -110,7 +110,7 @@ func resourceManagedPrefixListCreate(ctx context.Context, d *schema.ResourceData
 	name := d.Get(names.AttrName).(string)
 	input := &ec2.CreateManagedPrefixListInput{
 		AddressFamily:     aws.String(d.Get("address_family").(string)),
-		ClientToken:       aws.String(create.UniqueId(ctx)),
+		ClientToken:       aws.String(idempotency.AutoToken),
 		MaxEntries:        aws.Int32(int32(d.Get("max_entries").(int))),
 		PrefixListName:    aws.String(name),
 		TagSpecifications: getTagSpecificationsIn(ctx, awstypes.ResourceTypePrefixList),

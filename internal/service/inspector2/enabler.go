@@ -25,6 +25,7 @@ import (
 	"github.com/hashicorp/terraform-provider-aws/internal/enum"
 	"github.com/hashicorp/terraform-provider-aws/internal/errs"
 	"github.com/hashicorp/terraform-provider-aws/internal/flex"
+	"github.com/hashicorp/terraform-provider-aws/internal/idempotency"
 	tfmaps "github.com/hashicorp/terraform-provider-aws/internal/maps"
 	"github.com/hashicorp/terraform-provider-aws/internal/retry"
 	"github.com/hashicorp/terraform-provider-aws/internal/sdkv2"
@@ -111,7 +112,7 @@ func resourceEnablerCreate(ctx context.Context, d *schema.ResourceData, meta any
 	in := &inspector2.EnableInput{
 		AccountIds:    accountIDs,
 		ResourceTypes: typeEnable,
-		ClientToken:   aws.String(create.UniqueId(ctx)),
+		ClientToken:   aws.String(idempotency.AutoToken),
 	}
 
 	id := enablerID(accountIDs, typeEnable)
@@ -276,7 +277,7 @@ func resourceEnablerUpdate(ctx context.Context, d *schema.ResourceData, meta any
 			in := &inspector2.EnableInput{
 				AccountIds:    acctEnable,
 				ResourceTypes: typeEnable,
-				ClientToken:   aws.String(create.UniqueId(ctx)),
+				ClientToken:   aws.String(idempotency.AutoToken),
 			}
 
 			out, err := conn.Enable(ctx, in)

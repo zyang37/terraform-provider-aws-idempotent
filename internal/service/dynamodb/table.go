@@ -23,7 +23,6 @@ import (
 	"github.com/hashicorp/go-cty/cty"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/customdiff"
-	sdkid "github.com/hashicorp/terraform-plugin-sdk/v2/helper/id"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 	"github.com/hashicorp/terraform-provider-aws/internal/conns"
@@ -33,6 +32,7 @@ import (
 	"github.com/hashicorp/terraform-provider-aws/internal/errs"
 	"github.com/hashicorp/terraform-provider-aws/internal/errs/sdkdiag"
 	"github.com/hashicorp/terraform-provider-aws/internal/flex"
+	"github.com/hashicorp/terraform-provider-aws/internal/idempotency"
 	tfmaps "github.com/hashicorp/terraform-provider-aws/internal/maps"
 	"github.com/hashicorp/terraform-provider-aws/internal/retry"
 	"github.com/hashicorp/terraform-provider-aws/internal/sdkv2"
@@ -3047,7 +3047,7 @@ func expandLocalSecondaryIndexes(cfg []any, keySchemaM map[string]any) []awstype
 
 func expandImportTable(data map[string]any) *dynamodb.ImportTableInput {
 	a := &dynamodb.ImportTableInput{
-		ClientToken: aws.String(sdkid.UniqueId()),
+		ClientToken: aws.String(idempotency.AutoToken),
 	}
 
 	if v, ok := data["input_compression_type"].(string); ok {

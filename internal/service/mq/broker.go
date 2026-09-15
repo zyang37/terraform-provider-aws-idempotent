@@ -26,7 +26,6 @@ import (
 	"github.com/hashicorp/aws-sdk-go-base/v2/tfawserr"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/customdiff"
-	sdkid "github.com/hashicorp/terraform-plugin-sdk/v2/helper/id"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 	"github.com/hashicorp/terraform-provider-aws/internal/conns"
@@ -35,6 +34,7 @@ import (
 	"github.com/hashicorp/terraform-provider-aws/internal/errs"
 	"github.com/hashicorp/terraform-provider-aws/internal/errs/sdkdiag"
 	"github.com/hashicorp/terraform-provider-aws/internal/flex"
+	"github.com/hashicorp/terraform-provider-aws/internal/idempotency"
 	"github.com/hashicorp/terraform-provider-aws/internal/retry"
 	"github.com/hashicorp/terraform-provider-aws/internal/sdkv2/types/nullable"
 	"github.com/hashicorp/terraform-provider-aws/internal/semver"
@@ -436,7 +436,7 @@ func resourceBrokerCreate(ctx context.Context, d *schema.ResourceData, meta any)
 	input := mq.CreateBrokerInput{
 		AutoMinorVersionUpgrade: aws.Bool(d.Get(names.AttrAutoMinorVersionUpgrade).(bool)),
 		BrokerName:              aws.String(name),
-		CreatorRequestId:        aws.String(sdkid.PrefixedUniqueId(fmt.Sprintf("tf-%s", name))),
+		CreatorRequestId:        aws.String(idempotency.AutoToken),
 		EngineType:              types.EngineType(engineType),
 		EngineVersion:           aws.String(d.Get(names.AttrEngineVersion).(string)),
 		HostInstanceType:        aws.String(d.Get("host_instance_type").(string)),

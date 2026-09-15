@@ -37,6 +37,7 @@ import (
 	"github.com/hashicorp/terraform-provider-aws/internal/errs"
 	"github.com/hashicorp/terraform-provider-aws/internal/errs/sdkdiag"
 	"github.com/hashicorp/terraform-provider-aws/internal/flex"
+	"github.com/hashicorp/terraform-provider-aws/internal/idempotency"
 	"github.com/hashicorp/terraform-provider-aws/internal/provider/sdkv2/importer"
 	"github.com/hashicorp/terraform-provider-aws/internal/retry"
 	"github.com/hashicorp/terraform-provider-aws/internal/sdkv2"
@@ -1162,7 +1163,7 @@ func resourceInstanceCreate(ctx context.Context, d *schema.ResourceData, meta an
 	input := ec2.RunInstancesInput{
 		BlockDeviceMappings:               instanceOpts.BlockDeviceMappings,
 		CapacityReservationSpecification:  instanceOpts.CapacityReservationSpecification,
-		ClientToken:                       aws.String(create.UniqueId(ctx)),
+		ClientToken:                       aws.String(idempotency.AutoToken),
 		CpuOptions:                        instanceOpts.CpuOptions,
 		CreditSpecification:               instanceOpts.CreditSpecification,
 		DisableApiTermination:             instanceOpts.DisableAPITermination,
@@ -1757,7 +1758,7 @@ func resourceInstanceUpdate(ctx context.Context, d *schema.ResourceData, meta an
 			instanceCreditSpecification := expandInstanceCreditSpecificationRequest(v.([]any)[0].(map[string]any))
 			instanceCreditSpecification.InstanceId = aws.String(d.Id())
 			input := ec2.ModifyInstanceCreditSpecificationInput{
-				ClientToken:                  aws.String(create.UniqueId(ctx)),
+				ClientToken:                  aws.String(idempotency.AutoToken),
 				InstanceCreditSpecifications: []awstypes.InstanceCreditSpecificationRequest{instanceCreditSpecification},
 			}
 

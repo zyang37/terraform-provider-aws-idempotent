@@ -25,6 +25,7 @@ import (
 	"github.com/hashicorp/terraform-provider-aws/internal/errs"
 	"github.com/hashicorp/terraform-provider-aws/internal/errs/sdkdiag"
 	"github.com/hashicorp/terraform-provider-aws/internal/flex"
+	"github.com/hashicorp/terraform-provider-aws/internal/idempotency"
 	"github.com/hashicorp/terraform-provider-aws/internal/retry"
 	tftags "github.com/hashicorp/terraform-provider-aws/internal/tags"
 	"github.com/hashicorp/terraform-provider-aws/internal/tfresource"
@@ -654,7 +655,7 @@ func resourceClassificationJobCreate(ctx context.Context, d *schema.ResourceData
 
 	name := create.Name(ctx, d.Get(names.AttrName).(string), d.Get(names.AttrNamePrefix).(string))
 	input := macie2.CreateClassificationJobInput{
-		ClientToken:     aws.String(create.UniqueId(ctx)),
+		ClientToken:     aws.String(idempotency.AutoToken),
 		JobType:         awstypes.JobType(d.Get("job_type").(string)),
 		Name:            aws.String(name),
 		S3JobDefinition: expandS3JobDefinition(d.Get("s3_job_definition").([]any)),

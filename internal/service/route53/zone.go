@@ -21,9 +21,9 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 	"github.com/hashicorp/terraform-provider-aws/internal/conns"
-	"github.com/hashicorp/terraform-provider-aws/internal/create"
 	"github.com/hashicorp/terraform-provider-aws/internal/errs"
 	"github.com/hashicorp/terraform-provider-aws/internal/errs/sdkdiag"
+	"github.com/hashicorp/terraform-provider-aws/internal/idempotency"
 	"github.com/hashicorp/terraform-provider-aws/internal/retry"
 	"github.com/hashicorp/terraform-provider-aws/internal/sdkv2"
 	tfslices "github.com/hashicorp/terraform-provider-aws/internal/slices"
@@ -142,7 +142,7 @@ func resourceZoneCreate(ctx context.Context, d *schema.ResourceData, meta any) d
 
 	name := d.Get(names.AttrName).(string)
 	input := route53.CreateHostedZoneInput{
-		CallerReference: aws.String(create.UniqueId(ctx)),
+		CallerReference: aws.String(idempotency.AutoToken),
 		Name:            aws.String(name),
 		HostedZoneConfig: &awstypes.HostedZoneConfig{
 			Comment: aws.String(d.Get(names.AttrComment).(string)),

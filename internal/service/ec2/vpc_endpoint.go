@@ -24,11 +24,11 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/structure"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 	"github.com/hashicorp/terraform-provider-aws/internal/conns"
-	"github.com/hashicorp/terraform-provider-aws/internal/create"
 	"github.com/hashicorp/terraform-provider-aws/internal/enum"
 	"github.com/hashicorp/terraform-provider-aws/internal/errs"
 	"github.com/hashicorp/terraform-provider-aws/internal/errs/sdkdiag"
 	"github.com/hashicorp/terraform-provider-aws/internal/flex"
+	"github.com/hashicorp/terraform-provider-aws/internal/idempotency"
 	"github.com/hashicorp/terraform-provider-aws/internal/retry"
 	"github.com/hashicorp/terraform-provider-aws/internal/sdkv2"
 	tftags "github.com/hashicorp/terraform-provider-aws/internal/tags"
@@ -273,7 +273,7 @@ func resourceVPCEndpointCreate(ctx context.Context, d *schema.ResourceData, meta
 
 	serviceName := d.Get(names.AttrServiceName).(string)
 	input := &ec2.CreateVpcEndpointInput{
-		ClientToken:       aws.String(create.UniqueId(ctx)),
+		ClientToken:       aws.String(idempotency.AutoToken),
 		PrivateDnsEnabled: aws.Bool(d.Get("private_dns_enabled").(bool)),
 		TagSpecifications: getTagSpecificationsIn(ctx, awstypes.ResourceTypeVpcEndpoint),
 		VpcEndpointType:   awstypes.VpcEndpointType(d.Get("vpc_endpoint_type").(string)),

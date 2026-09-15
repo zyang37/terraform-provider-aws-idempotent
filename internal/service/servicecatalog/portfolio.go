@@ -17,9 +17,9 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 	"github.com/hashicorp/terraform-provider-aws/internal/conns"
-	"github.com/hashicorp/terraform-provider-aws/internal/create"
 	"github.com/hashicorp/terraform-provider-aws/internal/errs"
 	"github.com/hashicorp/terraform-provider-aws/internal/errs/sdkdiag"
+	"github.com/hashicorp/terraform-provider-aws/internal/idempotency"
 	"github.com/hashicorp/terraform-provider-aws/internal/retry"
 	tftags "github.com/hashicorp/terraform-provider-aws/internal/tags"
 	"github.com/hashicorp/terraform-provider-aws/internal/tfresource"
@@ -90,7 +90,7 @@ func resourcePortfolioCreate(ctx context.Context, d *schema.ResourceData, meta a
 	input := &servicecatalog.CreatePortfolioInput{
 		AcceptLanguage:   aws.String(acceptLanguageEnglish),
 		DisplayName:      aws.String(name),
-		IdempotencyToken: aws.String(create.UniqueId(ctx)),
+		IdempotencyToken: aws.String(idempotency.AutoToken),
 		Tags:             getTagsIn(ctx),
 	}
 

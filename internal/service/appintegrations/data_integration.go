@@ -17,9 +17,9 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 	"github.com/hashicorp/terraform-provider-aws/internal/conns"
-	"github.com/hashicorp/terraform-provider-aws/internal/create"
 	"github.com/hashicorp/terraform-provider-aws/internal/errs"
 	"github.com/hashicorp/terraform-provider-aws/internal/errs/sdkdiag"
+	"github.com/hashicorp/terraform-provider-aws/internal/idempotency"
 	tftags "github.com/hashicorp/terraform-provider-aws/internal/tags"
 	"github.com/hashicorp/terraform-provider-aws/names"
 )
@@ -119,7 +119,7 @@ func resourceDataIntegrationCreate(ctx context.Context, d *schema.ResourceData, 
 
 	name := d.Get(names.AttrName).(string)
 	input := &appintegrations.CreateDataIntegrationInput{
-		ClientToken:    aws.String(create.UniqueId(ctx)),
+		ClientToken:    aws.String(idempotency.AutoToken),
 		KmsKey:         aws.String(d.Get(names.AttrKMSKey).(string)),
 		Name:           aws.String(name),
 		ScheduleConfig: expandScheduleConfig(d.Get("schedule_config").([]any)),

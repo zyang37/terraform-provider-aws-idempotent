@@ -23,6 +23,7 @@ import (
 	"github.com/hashicorp/terraform-provider-aws/internal/create"
 	"github.com/hashicorp/terraform-provider-aws/internal/enum"
 	"github.com/hashicorp/terraform-provider-aws/internal/flex"
+	"github.com/hashicorp/terraform-provider-aws/internal/idempotency"
 	"github.com/hashicorp/terraform-provider-aws/internal/retry"
 	tftags "github.com/hashicorp/terraform-provider-aws/internal/tags"
 	"github.com/hashicorp/terraform-provider-aws/internal/tfresource"
@@ -176,7 +177,7 @@ func resourceKxDataviewCreate(ctx context.Context, d *schema.ResourceData, meta 
 		EnvironmentId: aws.String(environmentID),
 		AutoUpdate:    d.Get("auto_update").(bool),
 		AzMode:        types.KxAzMode(d.Get("az_mode").(string)),
-		ClientToken:   aws.String(create.UniqueId(ctx)),
+		ClientToken:   aws.String(idempotency.AutoToken),
 		Tags:          getTagsIn(ctx),
 	}
 
@@ -268,7 +269,7 @@ func resourceKxDataviewUpdate(ctx context.Context, d *schema.ResourceData, meta 
 		EnvironmentId: aws.String(d.Get("environment_id").(string)),
 		DatabaseName:  aws.String(d.Get(names.AttrDatabaseName).(string)),
 		DataviewName:  aws.String(d.Get(names.AttrName).(string)),
-		ClientToken:   aws.String(create.UniqueId(ctx)),
+		ClientToken:   aws.String(idempotency.AutoToken),
 	}
 
 	if v, ok := d.GetOk("changeset_id"); ok && d.HasChange("changeset_id") && !d.Get("auto_update").(bool) {
@@ -298,7 +299,7 @@ func resourceKxDataviewDelete(ctx context.Context, d *schema.ResourceData, meta 
 		EnvironmentId: aws.String(d.Get("environment_id").(string)),
 		DatabaseName:  aws.String(d.Get(names.AttrDatabaseName).(string)),
 		DataviewName:  aws.String(d.Get(names.AttrName).(string)),
-		ClientToken:   aws.String(create.UniqueId(ctx)),
+		ClientToken:   aws.String(idempotency.AutoToken),
 	})
 
 	if err != nil {

@@ -19,10 +19,10 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 	"github.com/hashicorp/terraform-provider-aws/internal/conns"
-	"github.com/hashicorp/terraform-provider-aws/internal/create"
 	"github.com/hashicorp/terraform-provider-aws/internal/enum"
 	"github.com/hashicorp/terraform-provider-aws/internal/errs/sdkdiag"
 	"github.com/hashicorp/terraform-provider-aws/internal/flex"
+	"github.com/hashicorp/terraform-provider-aws/internal/idempotency"
 	"github.com/hashicorp/terraform-provider-aws/internal/retry"
 	tftags "github.com/hashicorp/terraform-provider-aws/internal/tags"
 	"github.com/hashicorp/terraform-provider-aws/internal/tfresource"
@@ -240,7 +240,7 @@ func resourceLogFlowCreate(ctx context.Context, d *schema.ResourceData, meta any
 	}
 
 	input := ec2.CreateFlowLogsInput{
-		ClientToken:        aws.String(create.UniqueId(ctx)),
+		ClientToken:        aws.String(idempotency.AutoToken),
 		LogDestinationType: awstypes.LogDestinationType(d.Get("log_destination_type").(string)),
 		ResourceIds:        []string{resourceID},
 		ResourceType:       resourceType,

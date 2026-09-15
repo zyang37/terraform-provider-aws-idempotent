@@ -19,10 +19,10 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 	"github.com/hashicorp/terraform-provider-aws/internal/conns"
-	"github.com/hashicorp/terraform-provider-aws/internal/create"
 	"github.com/hashicorp/terraform-provider-aws/internal/errs"
 	"github.com/hashicorp/terraform-provider-aws/internal/errs/sdkdiag"
 	"github.com/hashicorp/terraform-provider-aws/internal/flex"
+	"github.com/hashicorp/terraform-provider-aws/internal/idempotency"
 	"github.com/hashicorp/terraform-provider-aws/internal/retry"
 	"github.com/hashicorp/terraform-provider-aws/internal/tfresource"
 	"github.com/hashicorp/terraform-provider-aws/names"
@@ -80,7 +80,7 @@ func resourceInstancePut(ctx context.Context, d *schema.ResourceData, meta any) 
 	instanceID := d.Get(names.AttrInstanceID).(string)
 	input := &servicediscovery.RegisterInstanceInput{
 		Attributes:       flex.ExpandStringValueMap(d.Get(names.AttrAttributes).(map[string]any)),
-		CreatorRequestId: aws.String(create.UniqueId(ctx)),
+		CreatorRequestId: aws.String(idempotency.AutoToken),
 		InstanceId:       aws.String(instanceID),
 		ServiceId:        aws.String(d.Get("service_id").(string)),
 	}

@@ -18,10 +18,10 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-provider-aws/internal/conns"
-	"github.com/hashicorp/terraform-provider-aws/internal/create"
 	"github.com/hashicorp/terraform-provider-aws/internal/enum"
 	"github.com/hashicorp/terraform-provider-aws/internal/errs"
 	"github.com/hashicorp/terraform-provider-aws/internal/errs/sdkdiag"
+	"github.com/hashicorp/terraform-provider-aws/internal/idempotency"
 	"github.com/hashicorp/terraform-provider-aws/internal/retry"
 	tfslices "github.com/hashicorp/terraform-provider-aws/internal/slices"
 	"github.com/hashicorp/terraform-provider-aws/internal/tfresource"
@@ -119,7 +119,7 @@ func resourceResourceShareAccepterCreate(ctx context.Context, d *schema.Resource
 	}
 
 	input := ram.AcceptResourceShareInvitationInput{
-		ClientToken:                aws.String(create.UniqueId(ctx)),
+		ClientToken:                aws.String(idempotency.AutoToken),
 		ResourceShareInvitationArn: aws.String(invitationARN),
 	}
 
@@ -213,7 +213,7 @@ func resourceResourceShareAccepterDelete(ctx context.Context, d *schema.Resource
 	}
 
 	input := ram.DisassociateResourceShareInput{
-		ClientToken:      aws.String(create.UniqueId(ctx)),
+		ClientToken:      aws.String(idempotency.AutoToken),
 		Principals:       []string{receiverAccountID},
 		ResourceShareArn: aws.String(d.Id()),
 	}

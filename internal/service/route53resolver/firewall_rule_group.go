@@ -13,11 +13,11 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/route53resolver"
 	awstypes "github.com/aws/aws-sdk-go-v2/service/route53resolver/types"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
-	sdkid "github.com/hashicorp/terraform-plugin-sdk/v2/helper/id"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-provider-aws/internal/conns"
 	"github.com/hashicorp/terraform-provider-aws/internal/errs"
 	"github.com/hashicorp/terraform-provider-aws/internal/errs/sdkdiag"
+	"github.com/hashicorp/terraform-provider-aws/internal/idempotency"
 	"github.com/hashicorp/terraform-provider-aws/internal/retry"
 	tftags "github.com/hashicorp/terraform-provider-aws/internal/tags"
 	"github.com/hashicorp/terraform-provider-aws/internal/tfresource"
@@ -70,7 +70,7 @@ func resourceFirewallRuleGroupCreate(ctx context.Context, d *schema.ResourceData
 
 	name := d.Get(names.AttrName).(string)
 	input := &route53resolver.CreateFirewallRuleGroupInput{
-		CreatorRequestId: aws.String(sdkid.PrefixedUniqueId("tf-r53-resolver-firewall-rule-group-")),
+		CreatorRequestId: aws.String(idempotency.AutoToken),
 		Name:             aws.String(name),
 		Tags:             getTagsIn(ctx),
 	}

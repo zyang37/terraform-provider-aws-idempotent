@@ -24,6 +24,7 @@ import (
 	"github.com/hashicorp/terraform-provider-aws/internal/create"
 	"github.com/hashicorp/terraform-provider-aws/internal/enum"
 	"github.com/hashicorp/terraform-provider-aws/internal/errs/sdkdiag"
+	"github.com/hashicorp/terraform-provider-aws/internal/idempotency"
 	"github.com/hashicorp/terraform-provider-aws/internal/retry"
 	tftags "github.com/hashicorp/terraform-provider-aws/internal/tags"
 	"github.com/hashicorp/terraform-provider-aws/internal/tfresource"
@@ -173,7 +174,7 @@ func resourceNetworkACLCreate(ctx context.Context, d *schema.ResourceData, meta 
 	conn := meta.(*conns.AWSClient).EC2Client(ctx)
 
 	input := &ec2.CreateNetworkAclInput{
-		ClientToken:       aws.String(create.UniqueId(ctx)),
+		ClientToken:       aws.String(idempotency.AutoToken),
 		TagSpecifications: getTagSpecificationsIn(ctx, awstypes.ResourceTypeNetworkAcl),
 		VpcId:             aws.String(d.Get(names.AttrVPCID).(string)),
 	}

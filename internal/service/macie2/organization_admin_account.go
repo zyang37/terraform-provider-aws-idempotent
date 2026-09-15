@@ -17,9 +17,9 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-provider-aws/internal/conns"
-	"github.com/hashicorp/terraform-provider-aws/internal/create"
 	"github.com/hashicorp/terraform-provider-aws/internal/errs"
 	"github.com/hashicorp/terraform-provider-aws/internal/errs/sdkdiag"
+	"github.com/hashicorp/terraform-provider-aws/internal/idempotency"
 	"github.com/hashicorp/terraform-provider-aws/internal/retry"
 	"github.com/hashicorp/terraform-provider-aws/internal/tfresource"
 )
@@ -54,7 +54,7 @@ func resourceOrganizationAdminAccountCreate(ctx context.Context, d *schema.Resou
 	adminAccountID := d.Get("admin_account_id").(string)
 	input := &macie2.EnableOrganizationAdminAccountInput{
 		AdminAccountId: aws.String(adminAccountID),
-		ClientToken:    aws.String(create.UniqueId(ctx)),
+		ClientToken:    aws.String(idempotency.AutoToken),
 	}
 
 	err := tfresource.Retry(ctx, 4*time.Minute, func(ctx context.Context) *tfresource.RetryError {

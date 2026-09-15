@@ -24,6 +24,7 @@ import (
 	"github.com/hashicorp/terraform-provider-aws/internal/enum"
 	"github.com/hashicorp/terraform-provider-aws/internal/errs/sdkdiag"
 	"github.com/hashicorp/terraform-provider-aws/internal/flex"
+	"github.com/hashicorp/terraform-provider-aws/internal/idempotency"
 	"github.com/hashicorp/terraform-provider-aws/internal/retry"
 	"github.com/hashicorp/terraform-provider-aws/internal/sdkv2/types/nullable"
 	tfslices "github.com/hashicorp/terraform-provider-aws/internal/slices"
@@ -1113,7 +1114,7 @@ func resourceLaunchTemplateCreate(ctx context.Context, d *schema.ResourceData, m
 
 	name := create.Name(ctx, d.Get(names.AttrName).(string), d.Get(names.AttrNamePrefix).(string))
 	input := ec2.CreateLaunchTemplateInput{
-		ClientToken:        aws.String(create.UniqueId(ctx)),
+		ClientToken:        aws.String(idempotency.AutoToken),
 		LaunchTemplateName: aws.String(name),
 		TagSpecifications:  getTagSpecificationsIn(ctx, awstypes.ResourceTypeLaunchTemplate),
 	}
@@ -1230,7 +1231,7 @@ func resourceLaunchTemplateUpdate(ctx context.Context, d *schema.ResourceData, m
 
 	if d.HasChanges(updateKeys...) {
 		input := ec2.CreateLaunchTemplateVersionInput{
-			ClientToken:      aws.String(create.UniqueId(ctx)),
+			ClientToken:      aws.String(idempotency.AutoToken),
 			LaunchTemplateId: aws.String(d.Id()),
 		}
 

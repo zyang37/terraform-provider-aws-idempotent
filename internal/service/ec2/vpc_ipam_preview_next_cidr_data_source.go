@@ -15,9 +15,9 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 	"github.com/hashicorp/terraform-provider-aws/internal/conns"
-	"github.com/hashicorp/terraform-provider-aws/internal/create"
 	"github.com/hashicorp/terraform-provider-aws/internal/errs/sdkdiag"
 	"github.com/hashicorp/terraform-provider-aws/internal/flex"
+	"github.com/hashicorp/terraform-provider-aws/internal/idempotency"
 	"github.com/hashicorp/terraform-provider-aws/internal/verify"
 )
 
@@ -75,7 +75,7 @@ func dataSourceIPAMPreviewNextCIDRRead(ctx context.Context, d *schema.ResourceDa
 	poolId := d.Get("ipam_pool_id").(string)
 
 	input := &ec2.AllocateIpamPoolCidrInput{
-		ClientToken:     aws.String(create.UniqueId(ctx)),
+		ClientToken:     aws.String(idempotency.AutoToken),
 		IpamPoolId:      aws.String(poolId),
 		PreviewNextCidr: aws.Bool(true),
 	}

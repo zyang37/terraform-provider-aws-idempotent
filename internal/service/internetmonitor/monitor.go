@@ -19,10 +19,10 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 	"github.com/hashicorp/terraform-provider-aws/internal/conns"
-	"github.com/hashicorp/terraform-provider-aws/internal/create"
 	"github.com/hashicorp/terraform-provider-aws/internal/enum"
 	"github.com/hashicorp/terraform-provider-aws/internal/errs/sdkdiag"
 	"github.com/hashicorp/terraform-provider-aws/internal/flex"
+	"github.com/hashicorp/terraform-provider-aws/internal/idempotency"
 	"github.com/hashicorp/terraform-provider-aws/internal/retry"
 	tftags "github.com/hashicorp/terraform-provider-aws/internal/tags"
 	"github.com/hashicorp/terraform-provider-aws/internal/tfresource"
@@ -153,7 +153,7 @@ func resourceMonitorCreate(ctx context.Context, d *schema.ResourceData, meta any
 
 	name := d.Get("monitor_name").(string)
 	input := &internetmonitor.CreateMonitorInput{
-		ClientToken: aws.String(create.UniqueId(ctx)),
+		ClientToken: aws.String(idempotency.AutoToken),
 		MonitorName: aws.String(name),
 		Tags:        getTagsIn(ctx),
 	}
@@ -193,7 +193,7 @@ func resourceMonitorCreate(ctx context.Context, d *schema.ResourceData, meta any
 	if v, ok := d.GetOk(names.AttrStatus); ok {
 		if v := types.MonitorConfigState(v.(string)); v != types.MonitorConfigStateActive {
 			input := &internetmonitor.UpdateMonitorInput{
-				ClientToken: aws.String(create.UniqueId(ctx)),
+				ClientToken: aws.String(idempotency.AutoToken),
 				MonitorName: aws.String(d.Id()),
 				Status:      v,
 			}
@@ -253,7 +253,7 @@ func resourceMonitorUpdate(ctx context.Context, d *schema.ResourceData, meta any
 
 	if d.HasChangesExcept(names.AttrTags, names.AttrTagsAll) {
 		input := &internetmonitor.UpdateMonitorInput{
-			ClientToken: aws.String(create.UniqueId(ctx)),
+			ClientToken: aws.String(idempotency.AutoToken),
 			MonitorName: aws.String(d.Id()),
 		}
 
@@ -308,7 +308,7 @@ func resourceMonitorDelete(ctx context.Context, d *schema.ResourceData, meta any
 	conn := meta.(*conns.AWSClient).InternetMonitorClient(ctx)
 
 	input := &internetmonitor.UpdateMonitorInput{
-		ClientToken: aws.String(create.UniqueId(ctx)),
+		ClientToken: aws.String(idempotency.AutoToken),
 		MonitorName: aws.String(d.Id()),
 		Status:      types.MonitorConfigStateInactive,
 	}

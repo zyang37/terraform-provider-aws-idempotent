@@ -18,8 +18,8 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-provider-aws/internal/conns"
-	"github.com/hashicorp/terraform-provider-aws/internal/create"
 	"github.com/hashicorp/terraform-provider-aws/internal/errs/sdkdiag"
+	"github.com/hashicorp/terraform-provider-aws/internal/idempotency"
 	"github.com/hashicorp/terraform-provider-aws/internal/retry"
 	"github.com/hashicorp/terraform-provider-aws/internal/tfresource"
 	"github.com/hashicorp/terraform-provider-aws/internal/verify"
@@ -91,7 +91,7 @@ func resourceClientVPNRouteCreate(ctx context.Context, d *schema.ResourceData, m
 	destinationCIDR := d.Get("destination_cidr_block").(string)
 	id := clientVPNRouteCreateResourceID(endpointID, targetSubnetID, destinationCIDR)
 	input := &ec2.CreateClientVpnRouteInput{
-		ClientToken:          aws.String(create.UniqueId(ctx)),
+		ClientToken:          aws.String(idempotency.AutoToken),
 		ClientVpnEndpointId:  aws.String(endpointID),
 		DestinationCidrBlock: aws.String(destinationCIDR),
 	}

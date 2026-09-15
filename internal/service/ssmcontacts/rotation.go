@@ -27,6 +27,7 @@ import (
 	"github.com/hashicorp/terraform-provider-aws/internal/framework"
 	fwflex "github.com/hashicorp/terraform-provider-aws/internal/framework/flex"
 	fwtypes "github.com/hashicorp/terraform-provider-aws/internal/framework/types"
+	"github.com/hashicorp/terraform-provider-aws/internal/idempotency"
 	"github.com/hashicorp/terraform-provider-aws/internal/retry"
 	tftags "github.com/hashicorp/terraform-provider-aws/internal/tags"
 	"github.com/hashicorp/terraform-provider-aws/internal/tfresource"
@@ -237,7 +238,7 @@ func (r *rotationResource) Create(ctx context.Context, request resource.CreateRe
 	}
 
 	input := &ssmcontacts.CreateRotationInput{
-		IdempotencyToken: aws.String(create.UniqueId(ctx)),
+		IdempotencyToken: aws.String(idempotency.AutoToken),
 		ContactIds:       fwflex.ExpandFrameworkStringValueList(ctx, plan.ContactIds),
 		Name:             fwflex.StringFromFramework(ctx, plan.Name),
 		Recurrence: &awstypes.RecurrenceSettings{

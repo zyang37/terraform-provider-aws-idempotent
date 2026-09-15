@@ -17,8 +17,8 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-provider-aws/internal/conns"
-	"github.com/hashicorp/terraform-provider-aws/internal/create"
 	"github.com/hashicorp/terraform-provider-aws/internal/errs/sdkdiag"
+	"github.com/hashicorp/terraform-provider-aws/internal/idempotency"
 	"github.com/hashicorp/terraform-provider-aws/internal/retry"
 )
 
@@ -58,7 +58,7 @@ func resourceVerifiedAccessInstanceTrustProviderAttachmentCreate(ctx context.Con
 	vatpID := d.Get("verifiedaccess_trust_provider_id").(string)
 	resourceID := verifiedAccessInstanceTrustProviderAttachmentCreateResourceID(vaiID, vatpID)
 	input := &ec2.AttachVerifiedAccessTrustProviderInput{
-		ClientToken:                   aws.String(create.UniqueId(ctx)),
+		ClientToken:                   aws.String(idempotency.AutoToken),
 		VerifiedAccessInstanceId:      aws.String(vaiID),
 		VerifiedAccessTrustProviderId: aws.String(vatpID),
 	}
@@ -112,7 +112,7 @@ func resourceVerifiedAccessInstanceTrustProviderAttachmentDelete(ctx context.Con
 
 	log.Printf("[INFO] Deleting Verified Access Instance Trust Provider Attachment: %s", d.Id())
 	input := ec2.DetachVerifiedAccessTrustProviderInput{
-		ClientToken:                   aws.String(create.UniqueId(ctx)),
+		ClientToken:                   aws.String(idempotency.AutoToken),
 		VerifiedAccessInstanceId:      aws.String(vaiID),
 		VerifiedAccessTrustProviderId: aws.String(vatpID),
 	}

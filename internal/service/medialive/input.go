@@ -22,6 +22,7 @@ import (
 	"github.com/hashicorp/terraform-provider-aws/internal/create"
 	"github.com/hashicorp/terraform-provider-aws/internal/enum"
 	"github.com/hashicorp/terraform-provider-aws/internal/flex"
+	"github.com/hashicorp/terraform-provider-aws/internal/idempotency"
 	"github.com/hashicorp/terraform-provider-aws/internal/retry"
 	tftags "github.com/hashicorp/terraform-provider-aws/internal/tags"
 	"github.com/hashicorp/terraform-provider-aws/internal/tfresource"
@@ -191,7 +192,7 @@ func resourceInputCreate(ctx context.Context, d *schema.ResourceData, meta any) 
 	conn := meta.(*conns.AWSClient).MediaLiveClient(ctx)
 
 	in := &medialive.CreateInputInput{
-		RequestId: aws.String(create.UniqueId(ctx)),
+		RequestId: aws.String(idempotency.AutoToken),
 		Name:      aws.String(d.Get(names.AttrName).(string)),
 		Tags:      getTagsIn(ctx),
 		Type:      types.InputType(d.Get(names.AttrType).(string)),
