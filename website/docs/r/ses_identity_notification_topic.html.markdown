@@ -1,0 +1,53 @@
+---
+subcategory: "SES (Simple Email)"
+layout: "aws"
+page_title: "AWS: aws_ses_identity_notification_topic"
+description: |-
+  Setting AWS SES Identity Notification Topic
+---
+
+# Resource: aws_ses_identity_notification_topic
+
+Resource for managing SES Identity Notification Topics
+
+## Example Usage
+
+```terraform
+resource "aws_ses_identity_notification_topic" "test" {
+  topic_arn                = aws_sns_topic.example.arn
+  notification_type        = "Bounce"
+  identity                 = aws_ses_domain_identity.example.domain
+  include_original_headers = true
+}
+```
+
+## Argument Reference
+
+This resource supports the following arguments:
+
+* `identity` - (Required) Identity for which the Amazon SNS topic will be set. You can specify an identity by using its name or by using its ARN.
+* `include_original_headers` - (Optional) Whether SES should include original email headers in SNS notifications of this type. `false` by default.
+* `notification_type` - (Required) Type of notifications that will be published to the specified Amazon SNS topic. Valid Values: `Bounce`, `Complaint` or `Delivery`.
+* `region` - (Optional) Region where this resource will be [managed](https://docs.aws.amazon.com/general/latest/gr/rande.html#regional-endpoints). Defaults to the Region set in the [provider configuration](https://registry.terraform.io/providers/hashicorp/aws/latest/docs#aws-configuration-reference).
+* `topic_arn` - (Optional) ARN of the Amazon SNS topic. Can be set to `""` (an empty string) to disable publishing.
+
+## Attribute Reference
+
+This resource exports no additional attributes.
+
+## Import
+
+In Terraform v1.5.0 and later, use an [`import` block](https://developer.hashicorp.com/terraform/language/import) to import Identity Notification Topics using the ID of the record. The ID is made up as `IDENTITY|TYPE` where `IDENTITY` is the SES Identity and `TYPE` is the Notification Type. For example:
+
+```terraform
+import {
+  to = aws_ses_identity_notification_topic.test
+  id = "example.com|Bounce"
+}
+```
+
+Using `terraform import`, import Identity Notification Topics using the ID of the record. The ID is made up as `IDENTITY|TYPE` where `IDENTITY` is the SES Identity and `TYPE` is the Notification Type. For example:
+
+```console
+% terraform import aws_ses_identity_notification_topic.test 'example.com|Bounce'
+```

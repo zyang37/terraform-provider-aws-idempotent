@@ -1,0 +1,61 @@
+---
+subcategory: "AppFabric"
+layout: "aws"
+page_title: "AWS: aws_appfabric_app_authorization_connection"
+description: |-
+  Terraform resource for managing an AWS AppFabric App Authorization Connection.
+---
+
+# Resource: aws_appfabric_app_authorization_connection
+
+Terraform resource for managing an AWS AppFabric App Authorization Connection.
+
+## Example Usage
+
+### Basic Usage
+
+```terraform
+resource "aws_appfabric_app_authorization_connection" "example" {
+  app_authorization_arn = aws_appfabric_app_authorization.test.arn
+  app_bundle_arn        = aws_appfabric_app_bundle.arn
+}
+```
+
+## Argument Reference
+
+The following arguments are required:
+
+* `app_authorization_arn` - (Required) ARN or Universal Unique Identifier (UUID) of the app authorization to use for the request.
+* `app_bundle_arn` - (Required) ARN of the app bundle to use for the request.
+
+The following arguments are optional:
+
+* `auth_request` - (Optional) OAuth2 authorization information. Required if the app authorization for the request is configured with an OAuth2 (`oauth2`) authorization type. See [`auth_request` Block](#auth_request-block) for details.
+* `region` - (Optional) Region where this resource will be [managed](https://docs.aws.amazon.com/general/latest/gr/rande.html#regional-endpoints). Defaults to the Region set in the [provider configuration](https://registry.terraform.io/providers/hashicorp/aws/latest/docs#aws-configuration-reference).
+
+### `auth_request` Block
+
+The `auth_request` configuration block supports the following arguments:
+
+* `code` - (Required) Authorization code returned by the application after permission is granted in the application OAuth page (after clicking on the AuthURL).
+* `redirect_uri` - (Required) Redirect URL that is specified in the AuthURL and the application client.
+
+## Attribute Reference
+
+This resource exports the following attributes in addition to the arguments above:
+
+* `app` - Name of the application.
+* `tenant` - Information about an application tenant. See [`tenant` Block](#tenant-block) below.
+
+### `tenant` Block
+
+The `tenant` block exports the following attributes:
+
+* `tenant_display_name` - Display name of the tenant.
+* `tenant_identifier` - ID of the application tenant.
+
+## Timeouts
+
+[Configuration options](https://developer.hashicorp.com/terraform/language/resources/syntax#operation-timeouts):
+
+* `create` - (Default `30m`)

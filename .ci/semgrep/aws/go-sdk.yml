@@ -1,0 +1,46 @@
+# Copyright IBM Corp. 2014, 2026
+# "SPDX-License-Identifier: MPL-2.0"
+
+rules:
+  - id: multiple-service-imports
+    languages: [go]
+    message: Resources should not implement multiple AWS Go SDK service functionality
+    paths:
+      include:
+        - "/internal"
+      exclude:
+        - "/internal/service/**/*_test.go"
+        - "/internal/service/**/sweep.go"
+        - "/internal/acctest/acctest.go"
+        - "/internal/conns/**/*.go"
+    patterns:
+      - pattern: |
+          import ("$X")
+          import ("$Y")
+      - metavariable-regex:
+          metavariable: "$X"
+          regex: '^github.com/aws/aws-sdk-go-v2/service/[^/]+$'
+      - metavariable-regex:
+          metavariable: "$Y"
+          regex: '^github.com/aws/aws-sdk-go-v2/service/[^/]+$'
+    severity: WARNING
+
+  - id: helper-schema-ResourceData-Set-extraneous-value-pointer-conversion
+    fix: d.Set($ATTRIBUTE, $APIOBJECT)
+    languages: [go]
+    message: AWS Go SDK pointer conversion function for `d.Set()` value is extraneous
+    paths:
+      include:
+        - "/internal"
+    patterns:
+      - pattern-either:
+          - pattern: d.Set($ATTRIBUTE, aws.ToBool($APIOBJECT))
+          - pattern: d.Set($ATTRIBUTE, aws.ToFloat32($APIOBJECT))
+          - pattern: d.Set($ATTRIBUTE, aws.ToFloat64($APIOBJECT))
+          - pattern: d.Set($ATTRIBUTE, aws.ToInt($APIOBJECT))
+          - pattern: d.Set($ATTRIBUTE, aws.ToInt32($APIOBJECT))
+          - pattern: d.Set($ATTRIBUTE, aws.ToInt64($APIOBJECT))
+          - pattern: d.Set($ATTRIBUTE, int(aws.ToInt32($APIOBJECT)))
+          - pattern: d.Set($ATTRIBUTE, int(aws.ToInt64($APIOBJECT)))
+          - pattern: d.Set($ATTRIBUTE, aws.ToString($APIOBJECT))
+    severity: WARNING
