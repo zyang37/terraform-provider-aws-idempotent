@@ -10,19 +10,26 @@
   </picture>
 </a>
 
-# Terraform AWS Provider
+# terraform-provider-aws-idempotent
 
-[![Forums][discuss-badge]][discuss]
+A fork of the [Terraform AWS Provider](https://registry.terraform.io/providers/hashicorp/aws/latest/docs)
+that sends deterministic, journaled idempotency tokens on every AWS API call
+that supports one, instead of a random token per apply. If `terraform apply`
+is killed after a request reaches AWS but before Terraform records the
+result in state, the next apply resends the same token, AWS returns the
+resource it already created, and no duplicate is made.
 
-[discuss-badge]: https://img.shields.io/badge/discuss-terraform--aws-623CE4.svg?style=flat
-[discuss]: https://discuss.hashicorp.com/c/terraform-providers/tf-aws/
+Baseline: `hashicorp/terraform-provider-aws` v6.64.0, vendored unmodified so
+the idempotency changes are reviewable as a diff. See
+[docs/DEV_PLAN.md](docs/DEV_PLAN.md) for the design, verified facts, and
+current implementation status.
 
-The [AWS Provider](https://registry.terraform.io/providers/hashicorp/aws/latest/docs) enables [Terraform](https://terraform.io) to manage [AWS](https://aws.amazon.com) resources.
+- [Development plan and test plan](docs/DEV_PLAN.md)
+- [Supported AWS APIs](docs/SUPPORTED_APIS.md) (generated)
+- `internal/idempotency`: the deterministic token journal and SDK middleware
+- `tools/gen-idempotent-ops`: builds the operation table from AWS SDK Smithy models
+- `tools/codemod-tokens`: rewrites upstream random tokens to the idempotency sentinel
 
-- [Contributing guide](https://hashicorp.github.io/terraform-provider-aws/)
-- [Quarterly development roadmap](ROADMAP.md)
-- [FAQ](https://hashicorp.github.io/terraform-provider-aws/faq/)
-- [Tutorials](https://learn.hashicorp.com/collections/terraform/aws-get-started)
-- [discuss.hashicorp.com](https://discuss.hashicorp.com/c/terraform-providers/tf-aws/)
-
-_**Please note:** We take Terraform's security and our users' trust very seriously. If you believe you have found a security issue in the Terraform AWS Provider, please responsibly disclose it by contacting us at security@hashicorp.com._
+This is an independent fork, not affiliated with or endorsed by HashiCorp.
+For the upstream provider's own documentation, contributing guide, and
+security policy, see [hashicorp/terraform-provider-aws](https://github.com/hashicorp/terraform-provider-aws).
