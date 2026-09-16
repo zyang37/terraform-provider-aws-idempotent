@@ -25,10 +25,23 @@ the idempotency changes are reviewable as a diff. See
 current implementation status.
 
 - [Development plan and test plan](docs/DEV_PLAN.md)
-- [Supported AWS APIs](docs/SUPPORTED_APIS.md) (generated)
 - `internal/idempotency`: the deterministic token journal and SDK middleware
 - `tools/gen-idempotent-ops`: builds the operation table from AWS SDK Smithy models
 - `tools/codemod-tokens`: rewrites upstream random tokens to the idempotency sentinel
+
+## Supported AWS APIs
+
+Generated from the Smithy models in aws-sdk-go-v2 (commit `4e0240a`) against
+terraform-provider-aws `v6.64.0`, 2026-09-15. Full per-service, per-operation
+tables: [docs/SUPPORTED_APIS.md](docs/SUPPORTED_APIS.md) (regenerate with
+`tools/gen-idempotent-ops`).
+
+| Set | Operations | Description |
+|---|---|---|
+| Tier 1 | 1439 across 195 services | Carries the `smithy.api#idempotencyToken` trait; aws-sdk-go-v2 auto-fills these with a random UUID if left empty, so our middleware just has to set a deterministic value first. |
+| Tier 2 | 170 | Token-named member without the trait (e.g. ECS `CreateService`, Route 53 `CreateHostedZone`); the SDK does not touch these, so the provider must set them explicitly. |
+| Tier 1 called by upstream provider today | 519 | Operations where the idempotent provider changes real `apply` behavior. |
+| Tier 2 called by upstream provider today | 57 | Same, for Tier 2 operations. |
 
 This is an independent fork, not affiliated with or endorsed by HashiCorp.
 For the upstream provider's own documentation, contributing guide, and
