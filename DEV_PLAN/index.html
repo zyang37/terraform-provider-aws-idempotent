@@ -1,0 +1,1957 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Contributor documentation and reference for the Terraform AWS Provider">
+      
+      
+      
+      
+      
+      <link rel="icon" href="../images/hashicorp-black.png">
+      <meta name="generator" content="mkdocs-1.4.2, mkdocs-material-9.0.6">
+    
+    
+      
+        <title>terraform-provider-aws-idempotent: Development Plan - Terraform AWS Provider - Contributor Guide</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.558e4712.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.2505c338.min.css">
+      
+      
+
+    
+    
+    
+      
+    
+    
+      <link rel="stylesheet" href="../stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="hashicorp" data-md-color-primary="black" data-md-color-accent="blue">
+  
+    
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#terraform-provider-aws-idempotent-development-plan" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="Terraform AWS Provider - Contributor Guide" class="md-header__button md-logo" aria-label="Terraform AWS Provider - Contributor Guide" data-md-component="logo">
+      
+  <img src="../images/hashicorp.png" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Terraform AWS Provider - Contributor Guide
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              terraform-provider-aws-idempotent: Development Plan
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/hashicorp/terraform-provider-aws" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.2.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc.--><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    hashicorp/terraform-provider-aws
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="Terraform AWS Provider - Contributor Guide" class="md-nav__button md-logo" aria-label="Terraform AWS Provider - Contributor Guide" data-md-component="logo">
+      
+  <img src="../images/hashicorp.png" alt="logo">
+
+    </a>
+    Terraform AWS Provider - Contributor Guide
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/hashicorp/terraform-provider-aws" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.2.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc.--><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    hashicorp/terraform-provider-aws
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        Welcome
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+      
+      
+      <input class="md-nav__toggle md-toggle " data-md-toggle="__nav_2" type="checkbox" id="__nav_2" >
+      
+      
+      
+        <label class="md-nav__link" for="__nav_2" tabindex="0" aria-expanded="false">
+          Contribute
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Contribute" data-md-level="1">
+        <label class="md-nav__title" for="__nav_2">
+          <span class="md-nav__icon md-icon"></span>
+          Contribute
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../development-environment/" class="md-nav__link">
+        Development Environment
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+      
+      
+      <input class="md-nav__toggle md-toggle " data-md-toggle="__nav_2_2" type="checkbox" id="__nav_2_2" >
+      
+      
+      
+        <label class="md-nav__link" for="__nav_2_2" tabindex="0" aria-expanded="false">
+          Contribution Guides
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Contribution Guides" data-md-level="2">
+        <label class="md-nav__title" for="__nav_2_2">
+          <span class="md-nav__icon md-icon"></span>
+          Contribution Guides
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../add-a-new-service/" class="md-nav__link">
+        Add a New AWS Service
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../add-a-new-resource/" class="md-nav__link">
+        Add a New Resource Type
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../add-a-new-datasource/" class="md-nav__link">
+        Add a New Data Source Type
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../add-a-new-ephemeral-resource/" class="md-nav__link">
+        Add a New Ephemeral Resource Type
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../add-a-new-function/" class="md-nav__link">
+        Add a New Function
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../add-a-new-list-resource/" class="md-nav__link">
+        Add a New List Resource Type
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../add-a-new-region/" class="md-nav__link">
+        Add a New AWS Region
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../add-resource-identity-support/" class="md-nav__link">
+        Add Resource Identity Support
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../add-import-support/" class="md-nav__link">
+        Add Resource Import Support
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../resource-filtering/" class="md-nav__link">
+        Resource Filtering
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../resource-name-generation/" class="md-nav__link">
+        Resource Name Generation
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../resource-tagging/" class="md-nav__link">
+        Resource Tagging
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adding-a-tag-resource/" class="md-nav__link">
+        Tag Resource
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../bugs-and-enhancements/" class="md-nav__link">
+        Bugs and Enhancements
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../end-user-documentation/" class="md-nav__link">
+        Documentation Changes
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../running-and-writing-acceptance-tests/" class="md-nav__link">
+        Acceptance Tests
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../acc-test-generation/" class="md-nav__link">
+        Generated Acceptance Tests
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../unit-tests/" class="md-nav__link">
+        Unit Tests
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../continuous-integration/" class="md-nav__link">
+        Continuous Integration
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../changelog-process/" class="md-nav__link">
+        Changelog Process
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../raising-a-pull-request/" class="md-nav__link">
+        Raising a Pull Request
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../prioritization/" class="md-nav__link">
+        How We Prioritize
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ai-usage/" class="md-nav__link">
+        AI Usage
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+      
+      
+      <input class="md-nav__toggle md-toggle " data-md-toggle="__nav_3" type="checkbox" id="__nav_3" >
+      
+      
+      
+        <label class="md-nav__link" for="__nav_3" tabindex="0" aria-expanded="false">
+          Developer Reference
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Developer Reference" data-md-level="1">
+        <label class="md-nav__title" for="__nav_3">
+          <span class="md-nav__icon md-icon"></span>
+          Developer Reference
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../acc-test-environment-variables/" class="md-nav__link">
+        Acceptance Test Environment Variables
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../aws-sdk-go-base/" class="md-nav__link">
+        AWS SDK Go Base
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../breaking-changes/" class="md-nav__link">
+        Breaking Changes
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../core-services/" class="md-nav__link">
+        Core Services
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../data-handling-and-conversion/" class="md-nav__link">
+        Data Handling and Conversion
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../debugging/" class="md-nav__link">
+        Debugging
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../dependency-updates/" class="md-nav__link">
+        Dependency Updates
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../design-decision-log/" class="md-nav__link">
+        Design Decision Log
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../enhanced-region-support/" class="md-nav__link">
+        Enhanced Region Support
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../error-handling/" class="md-nav__link">
+        Error Handling
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../finders-and-listers/" class="md-nav__link">
+        Finders and Listers
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../go-for-contributors/" class="md-nav__link">
+        Go Conventions
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../go-vcr/" class="md-nav__link">
+        Go-VCR
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../github-actions-caching/" class="md-nav__link">
+        GitHub Actions Caching
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../id-attributes/" class="md-nav__link">
+        ID Attributes
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../makefile-cheat-sheet/" class="md-nav__link">
+        Makefile Cheat Sheet
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../naming/" class="md-nav__link">
+        Naming Standards
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../provider-design/" class="md-nav__link">
+        Provider Design
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../skaff/" class="md-nav__link">
+        Provider Scaffolding (skaff)
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../regular-expressions/" class="md-nav__link">
+        Regular Expressions
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../resource-identity/" class="md-nav__link">
+        Resource Identity
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../list-resources/" class="md-nav__link">
+        List Resources
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../retries-and-waiters/" class="md-nav__link">
+        Retries and Waiters
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../terraform-plugin-development-packages/" class="md-nav__link">
+        Terraform Plugin Development Packages
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../terraform-plugin-migrations/" class="md-nav__link">
+        Terraform Plugin Migrations
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../issue-reporting-and-lifecycle/" class="md-nav__link">
+        Submit an Issue
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../faq/" class="md-nav__link">
+        FAQ
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-goal" class="md-nav__link">
+    1. Goal
+  </a>
+  
+    <nav class="md-nav" aria-label="1. Goal">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#non-goals-v1" class="md-nav__link">
+    Non-goals (v1)
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-verified-facts-the-design-builds-on" class="md-nav__link">
+    2. Verified facts the design builds on
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-your-algorithm-made-precise" class="md-nav__link">
+    3. Your algorithm, made precise
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-architecture" class="md-nav__link">
+    4. Architecture
+  </a>
+  
+    <nav class="md-nav" aria-label="4. Architecture">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#41-components-and-files" class="md-nav__link">
+    4.1 Components and files
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#42-middleware-flow" class="md-nav__link">
+    4.2 Middleware flow
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#43-canonical-input-hashing" class="md-nav__link">
+    4.3 Canonical input hashing
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#44-journal" class="md-nav__link">
+    4.4 Journal
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#45-provider-configuration" class="md-nav__link">
+    4.5 Provider configuration
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-behavior-walkthrough" class="md-nav__link">
+    5. Behavior walkthrough
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-milestones" class="md-nav__link">
+    6. Milestones
+  </a>
+  
+    <nav class="md-nav" aria-label="6. Milestones">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#manual-sites-from-the-codemod-phase-3" class="md-nav__link">
+    MANUAL sites from the codemod (phase 3)
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#implementation-status-2026-09-15" class="md-nav__link">
+    Implementation status (2026-09-15)
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-known-limitations-state-these-in-the-readme" class="md-nav__link">
+    7. Known limitations (state these in the README)
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-test-plan" class="md-nav__link">
+    8. Test plan
+  </a>
+  
+    <nav class="md-nav" aria-label="8. Test plan">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#81-unit-tests-internalidempotency" class="md-nav__link">
+    8.1 Unit tests (internal/idempotency)
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#82-sdk-middleware-integration-no-aws-no-terraform" class="md-nav__link">
+    8.2 SDK middleware integration (no AWS, no Terraform)
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#83-codemod-tests-toolscodemod-tokens" class="md-nav__link">
+    8.3 Codemod tests (tools/codemod-tokens)
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#84-crash-recovery-end-to-end-local-hermetic-runs-in-ci" class="md-nav__link">
+    8.4 Crash-recovery end-to-end (local, hermetic, runs in CI)
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#85-real-aws-acceptance-sandbox-account-manual-or-nightly" class="md-nav__link">
+    8.5 Real AWS acceptance (sandbox account, manual or nightly)
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#86-upgrade-safety" class="md-nav__link">
+    8.6 Upgrade safety
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#9-tooling-already-in-this-repo" class="md-nav__link">
+    9. Tooling already in this repo
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  
+  
+
+
+
+<h1 id="terraform-provider-aws-idempotent-development-plan">terraform-provider-aws-idempotent: Development Plan<a class="headerlink" href="#terraform-provider-aws-idempotent-development-plan" title="Permanent link">#</a></h1>
+<p>Status: <strong>phases 0-3 implemented</strong>, 2026-09-15. Baseline: <code>hashicorp/terraform-provider-aws</code>
+<strong>v6.64.0</strong> (Go 1.26.6, <code>aws-sdk-go-v2</code> v1.46.0). See the "Implementation status"
+note after section 6 for exactly what exists in this checkout today versus what
+remains (phases 4-6: crash-recovery e2e against a real Terraform CLI, real-AWS
+acceptance tests, and packaging/release).</p>
+<h2 id="1-goal">1. Goal<a class="headerlink" href="#1-goal" title="Permanent link">#</a></h2>
+<p>A drop-in build of the AWS provider where every AWS API call that supports an
+idempotency token gets a <strong>deterministic, journaled</strong> token instead of a random
+one. If <code>terraform apply</code> is killed after a request reaches AWS but before
+Terraform records the result in state, the next apply resends the <strong>same</strong>
+token. AWS then returns the resource it already created, and no duplicate is
+made.</p>
+<h3 id="non-goals-v1">Non-goals (v1)<a class="headerlink" href="#non-goals-v1" title="Permanent link">#</a></h3>
+<ul>
+<li>Making operations without a token idempotent. See section 7.</li>
+<li>Changing any resource schema or plan behavior. Plans must be byte-identical
+  to upstream.</li>
+<li>Replacing Terraform state or locking.</li>
+</ul>
+<h2 id="2-verified-facts-the-design-builds-on">2. Verified facts the design builds on<a class="headerlink" href="#2-verified-facts-the-design-builds-on" title="Permanent link">#</a></h2>
+<table>
+<thead>
+<tr>
+<th>Fact</th>
+<th>Where</th>
+<th>Consequence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>The SDK auto-fills empty token members with a random UUID. The middleware ID is <code>OperationIdempotencyTokenAutoFill</code>, added to the Initialize step with <code>middleware.Before</code>.</td>
+<td><code>aws-sdk-go-v2/service/ec2/api_op_RunInstances.go</code></td>
+<td>We set a value before it runs, and the SDK leaves it alone.</td>
+</tr>
+<tr>
+<td>The provider already registers one global middleware for all clients through <code>cfg.APIOptions</code>.</td>
+<td><code>internal/conns/config.go</code>, the <code>apicall.Middleware()</code> call</td>
+<td>One line wires our middleware into every service client.</td>
+</tr>
+<tr>
+<td>The provider <strong>itself</strong> sets random tokens at 428 call sites, for example <code>ClientToken: aws.String(create.UniqueId(ctx))</code>.</td>
+<td><code>internal/service/**</code></td>
+<td>"Use the token if present" would keep these random tokens. They must be rewritten first. The codemod does this.</td>
+</tr>
+<tr>
+<td>Smithy models mark tokens with <code>smithy.api#idempotencyToken</code>, with length and pattern limits.</td>
+<td><code>aws-sdk-go-v2/codegen/sdk-codegen/aws-models</code></td>
+<td>The supported list and token formats are generated, not hand-written.</td>
+</tr>
+</tbody>
+</table>
+<p>Operation counts come from <code>docs/SUPPORTED_APIS.md</code>:</p>
+<table>
+<thead>
+<tr>
+<th>Set</th>
+<th>Operations</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Tier 1: has the <code>idempotencyToken</code> trait</td>
+<td>1439 across 195 services</td>
+</tr>
+<tr>
+<td>Tier 2: token-named member without the trait, such as ECS <code>CreateService</code> or Route 53 <code>CreateHostedZone</code></td>
+<td>170</td>
+</tr>
+<tr>
+<td>Tier 1 operations the provider calls today</td>
+<td>519</td>
+</tr>
+<tr>
+<td>Tier 2 operations the provider calls today</td>
+<td>57</td>
+</tr>
+</tbody>
+</table>
+<h2 id="3-your-algorithm-made-precise">3. Your algorithm, made precise<a class="headerlink" href="#3-your-algorithm-made-precise" title="Permanent link">#</a></h2>
+<p>The request asked for three steps: use an existing token, otherwise hash the API and arguments, then save the token locally. The precise version below adds four things that are needed for correctness.</p>
+<ol>
+<li><strong>Treat provider random tokens as "absent".</strong> The codemod replaces them with the sentinel <code>idempotency.AutoToken</code>.
+   Any other non-empty token is a real caller choice and is kept.</li>
+<li><strong>Add a sequence number.</strong> Two <code>aws_instance</code> resources with <code>count = 2</code> send byte-identical <code>RunInstances</code> inputs.
+   A hash alone would give both the same token, and AWS would return one instance twice.</li>
+<li><strong>Reuse only tokens that are still <code>pending</code>.</strong> A pending token was sent, but its response was never delivered.
+   Reusing a <em>completed</em> token breaks destroy-then-recreate. It also breaks setting A, then B, then A again on an update API, because AWS would replay the old result.</li>
+<li><strong>Salt per workspace.</strong> Two workspaces deploying identical configs into one account must not share tokens.
+   Without a salt, they would adopt each other's resources.</li>
+</ol>
+<div class="highlight"><pre><span></span><code>key   = SHA256( canonical{ partition, account, region, service, operation,
+                           resource_type, input_without_token_field } )
+token = format( HMAC-SHA256(workspace_salt, key || seq) )   // UUID / hex32 / hex64 per op table
+</code></pre></div>
+<p><code>seq</code> is the lowest sequence number for <code>key</code> whose journal entry is pending and not claimed by a live process. If no such entry exists, <code>seq</code> is one more than the highest existing sequence number.</p>
+<h2 id="4-architecture">4. Architecture<a class="headerlink" href="#4-architecture" title="Permanent link">#</a></h2>
+<div class="highlight"><pre><span></span><code>terraform core ──gRPC──▶ [A] ApplyResourceChange wrapper (sets call scope, commits journal on delivery)
+                              │
+                              ▼
+                     upstream resource code (codemod: random token → AutoToken sentinel)
+                              │  client.RunInstances(ctx, input)
+                              ▼
+        aws-sdk-go-v2 stack:  Initialize: [B1] mark ─▶ OperationIdempotencyTokenAutoFill (skips; non-empty)
+                              Serialize:  [B2] resolve token ─▶ journal [C] ─▶ OperationSerializer
+                              Finalize:   retry loop (same token on every attempt)
+                              Deserialize: ◀── response ── [B2] records outcome
+</code></pre></div>
+<h3 id="41-components-and-files">4.1 Components and files<a class="headerlink" href="#41-components-and-files" title="Permanent link">#</a></h3>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Component</th>
+<th>Location in the fork</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>Operation table</td>
+<td><code>internal/idempotency/zz_ops_gen.go</code></td>
+<td>Generated by <code>tools/gen-idempotent-ops/gen.py --go</code>. Keyed by input type <code>"&lt;import path&gt;.&lt;Op&gt;Input"</code>. Lookup is one map read.</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Middleware B1 and B2</td>
+<td><code>internal/idempotency/middleware.go</code></td>
+<td>Described in 4.2.</td>
+</tr>
+<tr>
+<td>3</td>
+<td>Canonical hasher</td>
+<td><code>internal/idempotency/canonical.go</code></td>
+<td>Reflection encoder. Details in 4.3.</td>
+</tr>
+<tr>
+<td>4</td>
+<td>Journal</td>
+<td><code>internal/idempotency/journal/</code></td>
+<td>SQLite through <code>modernc.org/sqlite</code>, which is pure Go with no cgo. Details in 4.4.</td>
+</tr>
+<tr>
+<td>5</td>
+<td>gRPC wrapper A</td>
+<td><code>internal/idempotency/server.go</code> plus a few lines in <code>main.go</code></td>
+<td>Wraps the muxed <code>tfprotov5.ProviderServer</code>.</td>
+</tr>
+<tr>
+<td>6</td>
+<td>Codemod</td>
+<td><code>tools/codemod-tokens</code></td>
+<td>Already written. Run it on every upstream sync.</td>
+</tr>
+<tr>
+<td>7</td>
+<td>Provider config</td>
+<td><code>idempotency {}</code> block in the provider schema</td>
+<td>Also readable from <code>TF_AWS_IDEMPOTENCY_*</code> environment variables.</td>
+</tr>
+<tr>
+<td>8</td>
+<td>Journal CLI</td>
+<td>Provider binary, when started with the <code>journal</code> argument</td>
+<td>Subcommands <code>ls</code>, <code>orphans</code>, and <code>gc</code>.</td>
+</tr>
+<tr>
+<td>9</td>
+<td>Wiring</td>
+<td><code>internal/conns/config.go</code></td>
+<td><code>cfg.APIOptions = append(cfg.APIOptions, idempotency.Middleware(journal, accountID))</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="42-middleware-flow">4.2 Middleware flow<a class="headerlink" href="#42-middleware-flow" title="Permanent link">#</a></h3>
+<p><strong>B1, Initialize step.</strong> It is inserted before <code>OperationIdempotencyTokenAutoFill</code>, or added first when that ID is absent, as in Tier 2.</p>
+<div class="highlight"><pre><span></span><code><span class="nx">spec</span><span class="p">,</span><span class="w"> </span><span class="nx">ok</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">opTable</span><span class="p">[</span><span class="nx">typeKey</span><span class="p">(</span><span class="nx">in</span><span class="p">.</span><span class="nx">Parameters</span><span class="p">)]</span><span class="w">        </span><span class="c1">// reflect: PkgPath + &quot;.&quot; + Name</span>
+<span class="k">if</span><span class="w"> </span><span class="p">!</span><span class="nx">ok</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="p">!</span><span class="nx">spec</span><span class="p">.</span><span class="nx">NameIsToken</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="nx">next</span><span class="p">(</span><span class="o">...</span><span class="p">)</span><span class="w"> </span><span class="p">}</span><span class="w">   </span><span class="c1">// 45 traited members like runtimeSessionId keep SDK behavior</span>
+<span class="nx">f</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">field</span><span class="p">(</span><span class="nx">in</span><span class="p">.</span><span class="nx">Parameters</span><span class="p">,</span><span class="w"> </span><span class="nx">spec</span><span class="p">.</span><span class="nx">Field</span><span class="p">)</span><span class="w">              </span><span class="c1">// *string</span>
+<span class="k">switch</span><span class="w"> </span><span class="p">{</span>
+<span class="k">case</span><span class="w"> </span><span class="nx">f</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="kc">nil</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="o">*</span><span class="nx">f</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s">&quot;&quot;</span><span class="p">:</span><span class="w">       </span><span class="o">*</span><span class="nx">f</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nx">AutoToken</span><span class="p">;</span><span class="w"> </span><span class="nx">ctx</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nx">withAuto</span><span class="p">(</span><span class="nx">ctx</span><span class="p">)</span><span class="w">   </span><span class="c1">// absent</span>
+<span class="k">case</span><span class="w"> </span><span class="o">*</span><span class="nx">f</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="nx">AutoToken</span><span class="p">:</span><span class="w">            </span><span class="nx">ctx</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nx">withAuto</span><span class="p">(</span><span class="nx">ctx</span><span class="p">)</span><span class="w">                   </span><span class="c1">// codemod sentinel</span>
+<span class="k">default</span><span class="p">:</span><span class="w">                         </span><span class="cm">/* caller-chosen token: keep */</span><span class="w">       </span><span class="c1">// your step 1</span>
+<span class="p">}</span>
+</code></pre></div>
+<p><strong>B2, Serialize step.</strong> It is inserted before <code>OperationSerializer</code>. Region and service metadata are resolved by this point.</p>
+<div class="highlight"><pre><span></span><code><span class="k">if</span><span class="w"> </span><span class="p">!</span><span class="nx">isAuto</span><span class="p">(</span><span class="nx">ctx</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="nx">next</span><span class="p">(</span><span class="o">...</span><span class="p">)</span><span class="w"> </span><span class="p">}</span>
+<span class="nx">key</span><span class="w">   </span><span class="o">:=</span><span class="w"> </span><span class="nx">hashKey</span><span class="p">(</span><span class="nx">scope</span><span class="p">(</span><span class="nx">ctx</span><span class="p">),</span><span class="w"> </span><span class="nx">in</span><span class="p">.</span><span class="nx">Parameters</span><span class="p">,</span><span class="w"> </span><span class="nx">spec</span><span class="p">.</span><span class="nx">Field</span><span class="p">)</span><span class="w">   </span><span class="c1">// token field zeroed before hashing</span>
+<span class="nx">entry</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">journal</span><span class="p">.</span><span class="nx">ClaimOrCreate</span><span class="p">(</span><span class="nx">key</span><span class="p">)</span><span class="w">                       </span><span class="c1">// fsync&#39;d BEFORE the request leaves</span>
+<span class="o">*</span><span class="nx">f</span><span class="w">     </span><span class="p">=</span><span class="w"> </span><span class="nx">format</span><span class="p">(</span><span class="nx">spec</span><span class="p">.</span><span class="nx">Format</span><span class="p">,</span><span class="w"> </span><span class="nx">hmac</span><span class="p">(</span><span class="nx">salt</span><span class="p">,</span><span class="w"> </span><span class="nx">key</span><span class="p">,</span><span class="w"> </span><span class="nx">entry</span><span class="p">.</span><span class="nx">Seq</span><span class="p">))</span>
+<span class="nx">out</span><span class="p">,</span><span class="w"> </span><span class="nx">md</span><span class="p">,</span><span class="w"> </span><span class="nx">err</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">next</span><span class="p">(</span><span class="o">...</span><span class="p">)</span><span class="w">                                 </span><span class="c1">// includes all SDK retries</span>
+<span class="k">switch</span><span class="w"> </span><span class="nx">classify</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="k">case</span><span class="w"> </span><span class="nx">ok</span><span class="p">:</span><span class="w">            </span><span class="nx">journal</span><span class="p">.</span><span class="nx">MarkResponded</span><span class="p">(</span><span class="nx">entry</span><span class="p">,</span><span class="w"> </span><span class="nx">summarize</span><span class="p">(</span><span class="nx">out</span><span class="p">),</span><span class="w"> </span><span class="nx">callScope</span><span class="p">(</span><span class="nx">ctx</span><span class="p">))</span>
+<span class="k">case</span><span class="w"> </span><span class="nx">apiRejected</span><span class="p">:</span><span class="w">   </span><span class="nx">journal</span><span class="p">.</span><span class="nx">MarkFailed</span><span class="p">(</span><span class="nx">entry</span><span class="p">,</span><span class="w"> </span><span class="nx">err</span><span class="p">)</span><span class="w">        </span><span class="c1">// 4xx validation: token is burned, never reuse</span>
+<span class="k">default</span><span class="p">:</span><span class="w">            </span><span class="cm">/* timeout, ctx canceled, conn reset: stay pending */</span>
+<span class="p">}</span>
+</code></pre></div>
+<p><strong>A, gRPC wrapper.</strong> It covers <code>ApplyResourceChange</code> only.</p>
+<ul>
+<li><strong>Before the call:</strong> it puts a call scope into <code>ctx</code> with the resource type and a call ID.</li>
+<li><strong>After the handler returns:</strong> if <code>ctx.Err() == nil</code>, it promotes the <code>responded</code> entries for that call ID to <code>completed</code>.</li>
+<li><strong>If Terraform is gone:</strong> a cancelled context usually means Terraform was killed or interrupted. The entries go back to <code>pending</code>, because Terraform never got the result.</li>
+</ul>
+<p>This closes the window where the provider process outlives a killed Terraform.</p>
+<h3 id="43-canonical-input-hashing">4.3 Canonical input hashing<a class="headerlink" href="#43-canonical-input-hashing" title="Permanent link">#</a></h3>
+<ul>
+<li><strong>What is encoded:</strong> exported fields in declaration order.</li>
+<li><strong>Maps:</strong> keys are sorted.</li>
+<li><strong>Empty values:</strong> <code>nil</code> and empty slices or maps are treated as equal. Pointers are dereferenced.</li>
+<li><strong>Special types:</strong> <code>time.Time</code> becomes RFC 3339 in UTC, and <code>[]byte</code> becomes base64.</li>
+<li><strong>Token field:</strong> it is zeroed first.</li>
+<li><strong>Streaming inputs:</strong> an input with an <code>io.Reader</code>, or an unsupported <code>document.Interface</code>, is not hashable. The call falls back to the SDK's random token and logs a warning.</li>
+<li><strong>Stability rule:</strong> the encoding version is part of the key. Any change to the encoder bumps the version.</li>
+</ul>
+<h3 id="44-journal">4.4 Journal<a class="headerlink" href="#44-journal" title="Permanent link">#</a></h3>
+<p><strong>Location.</strong> The default path is <code>.terraform/aws-idempotency/journal.db</code>. Terraform runs providers in the working directory, and <code>.terraform/</code> is already gitignored. It can be overridden by <code>idempotency { journal_path = ... }</code> or <code>TF_AWS_IDEMPOTENCY_JOURNAL</code>.</p>
+<div class="highlight"><pre><span></span><code><span class="k">CREATE</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="n">meta</span><span class="w">    </span><span class="p">(</span><span class="n">k</span><span class="w"> </span><span class="nb">TEXT</span><span class="w"> </span><span class="k">PRIMARY</span><span class="w"> </span><span class="k">KEY</span><span class="p">,</span><span class="w"> </span><span class="n">v</span><span class="w"> </span><span class="nb">BLOB</span><span class="p">);</span><span class="w">            </span><span class="c1">-- workspace_salt, schema_version</span>
+<span class="k">CREATE</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="n">entries</span><span class="w"> </span><span class="p">(</span>
+<span class="w">  </span><span class="k">key</span><span class="w">        </span><span class="nb">TEXT</span><span class="p">,</span><span class="w"> </span><span class="n">seq</span><span class="w"> </span><span class="nb">INTEGER</span><span class="p">,</span><span class="w"> </span><span class="n">token</span><span class="w"> </span><span class="nb">TEXT</span><span class="p">,</span>
+<span class="w">  </span><span class="n">service</span><span class="w">    </span><span class="nb">TEXT</span><span class="p">,</span><span class="w"> </span><span class="k">operation</span><span class="w"> </span><span class="nb">TEXT</span><span class="p">,</span><span class="w"> </span><span class="n">resource_type</span><span class="w"> </span><span class="nb">TEXT</span><span class="p">,</span>
+<span class="w">  </span><span class="k">state</span><span class="w">      </span><span class="nb">TEXT</span><span class="w"> </span><span class="k">CHECK</span><span class="w"> </span><span class="p">(</span><span class="k">state</span><span class="w"> </span><span class="k">IN</span><span class="w"> </span><span class="p">(</span><span class="s1">&#39;pending&#39;</span><span class="p">,</span><span class="s1">&#39;responded&#39;</span><span class="p">,</span><span class="s1">&#39;completed&#39;</span><span class="p">,</span><span class="s1">&#39;failed&#39;</span><span class="p">)),</span>
+<span class="w">  </span><span class="n">claimed_by</span><span class="w"> </span><span class="nb">TEXT</span><span class="p">,</span><span class="w">                 </span><span class="c1">-- &quot;&lt;pid&gt;:&lt;process start time&gt;&quot;</span>
+<span class="w">  </span><span class="n">call_id</span><span class="w">    </span><span class="nb">TEXT</span><span class="p">,</span><span class="w"> </span><span class="n">summary</span><span class="w"> </span><span class="nb">TEXT</span><span class="p">,</span><span class="w">   </span><span class="c1">-- response IDs/ARNs for orphan reports</span>
+<span class="w">  </span><span class="n">created_at</span><span class="w"> </span><span class="nb">INTEGER</span><span class="p">,</span><span class="w"> </span><span class="n">updated_at</span><span class="w"> </span><span class="nb">INTEGER</span><span class="p">,</span>
+<span class="w">  </span><span class="k">PRIMARY</span><span class="w"> </span><span class="k">KEY</span><span class="w"> </span><span class="p">(</span><span class="k">key</span><span class="p">,</span><span class="w"> </span><span class="n">seq</span><span class="p">)</span>
+<span class="p">);</span>
+</code></pre></div>
+<p><strong>Settings.</strong> The journal uses WAL mode with a busy timeout. Each provider alias runs as its own plugin process, so several processes may share one file.</p>
+<p><strong>Claiming.</strong> A claim is one transaction. It picks the lowest-<code>seq</code> entry that is <code>pending</code> and whose <code>claimed_by</code> process is dead. If there is none, it inserts a new entry.</p>
+<table>
+<thead>
+<tr>
+<th>State</th>
+<th>Meaning</th>
+<th>Reusable on next apply?</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>pending</code></td>
+<td>The request may have reached AWS, but no result was delivered to Terraform.</td>
+<td><strong>Yes.</strong> This is the crash-recovery path.</td>
+</tr>
+<tr>
+<td><code>responded</code></td>
+<td>AWS answered, but Terraform has not received it yet.</td>
+<td>Becomes <code>pending</code> if delivery fails, otherwise <code>completed</code>.</td>
+</tr>
+<tr>
+<td><code>completed</code></td>
+<td>Terraform received the result.</td>
+<td>No.</td>
+</tr>
+<tr>
+<td><code>failed</code></td>
+<td>AWS rejected the request.</td>
+<td>No.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Garbage collection.</strong> <code>completed</code> and <code>failed</code> entries are deleted after <code>retention</code>, which defaults to 7 days. When a <code>pending</code> entry is older than <code>orphan_warning_after</code>, which defaults to 24 hours, the provider logs a warning. The warning lists service, operation, and resource type, so a human can find a possible orphan.</p>
+<h3 id="45-provider-configuration">4.5 Provider configuration<a class="headerlink" href="#45-provider-configuration" title="Permanent link">#</a></h3>
+<div class="highlight"><pre><span></span><code>provider &quot;aws&quot; {
+  idempotency {
+    enabled              = true                      # default true
+    journal_path         = &quot;.terraform/aws-idempotency/journal.db&quot;
+    retention            = &quot;168h&quot;
+    orphan_warning_after = &quot;24h&quot;
+  }
+}
+</code></pre></div>
+<h2 id="5-behavior-walkthrough">5. Behavior walkthrough<a class="headerlink" href="#5-behavior-walkthrough" title="Permanent link">#</a></h2>
+<table>
+<thead>
+<tr>
+<th>Scenario</th>
+<th>Upstream provider</th>
+<th>This provider</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>The crash case.</strong> An apply creating <code>aws_instance.a</code> is killed after <code>RunInstances</code> was sent. Apply is run again.</td>
+<td>New random token, so a second instance is created. The first one is orphaned.</td>
+<td>The entry is <code>pending</code>, so the same token is sent. EC2 returns the original instance, and it is written to state.</td>
+</tr>
+<tr>
+<td><code>count = 2</code> with identical arguments</td>
+<td>Two instances</td>
+<td>Sequence numbers 0 and 1 give two tokens and two instances.</td>
+</tr>
+<tr>
+<td>Crash with <code>count = 2</code>, both sent</td>
+<td>Four instances after re-apply</td>
+<td>Both pending entries are reclaimed, so there are two instances.</td>
+</tr>
+<tr>
+<td>Destroy, then apply again the same day</td>
+<td>New instance</td>
+<td>Old entries are <code>completed</code>, so a new sequence number is used and a new instance is created.</td>
+</tr>
+<tr>
+<td>Update A, then B, then A again, for example EKS <code>UpdateClusterConfig</code></td>
+<td>Applied three times</td>
+<td>Each update gets a new sequence number, so each one is applied.</td>
+</tr>
+<tr>
+<td>Config edited after the crash, before re-apply</td>
+<td>Duplicate</td>
+<td>Also a duplicate, because the hash differs. The pending entry is reported as a possible orphan.</td>
+</tr>
+<tr>
+<td>Two workspaces with identical configs in one account</td>
+<td>Independent</td>
+<td>Independent, because the salts differ.</td>
+</tr>
+<tr>
+<td>Journal deleted, or a fresh CI runner</td>
+<td>n/a</td>
+<td>Same as upstream, with random-equivalent tokens. It is safe but gives no protection.</td>
+</tr>
+<tr>
+<td>An AWS 4xx validation error</td>
+<td>Error</td>
+<td>Error. The entry is <code>failed</code>, and a fixed config gets a new token.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="6-milestones">6. Milestones<a class="headerlink" href="#6-milestones" title="Permanent link">#</a></h2>
+<table>
+<thead>
+<tr>
+<th>Phase</th>
+<th>Deliverable</th>
+<th>Exit criteria</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>0. Fork and tooling</strong> (done in part)</td>
+<td>Import upstream v6.64.0 into this repo. Commit <code>tools/gen-idempotent-ops</code>, <code>tools/codemod-tokens</code>, <code>data/ops.json</code>, and <code>docs/SUPPORTED_APIS.md</code>. Add a <code>make sync-upstream TAG=</code> target.</td>
+<td><code>make build</code> produces a binary identical in behavior to upstream.</td>
+</tr>
+<tr>
+<td><strong>1. Core library</strong></td>
+<td><code>internal/idempotency</code> with the op table, canonical hasher, formats, and journal. There are no provider changes yet.</td>
+<td>Unit tests in 8.1 pass. Race detector is clean. Coverage is at least 90%.</td>
+</tr>
+<tr>
+<td><strong>2. SDK middleware</strong></td>
+<td>B1 and B2 wired through <code>APIOptions</code>.</td>
+<td>Tests in 8.2 pass against a real SDK client and a fake endpoint, for EC2, EKS, ECS Tier 2, and ACM hex32.</td>
+</tr>
+<tr>
+<td><strong>3. Provider integration</strong></td>
+<td>Codemod applied. 10 MANUAL sites fixed by hand. Config block, gRPC wrapper A, and journal CLI added.</td>
+<td>Provider compiles. Upstream unit tests (<code>make test</code>) pass. The upstream <code>apicall</code> end-to-end test still passes.</td>
+</tr>
+<tr>
+<td><strong>4. Crash testing</strong></td>
+<td>Fault-injection hooks and the crash harness in 8.4.</td>
+<td>All crash matrix rows pass in the local emulator, 50 iterations each.</td>
+</tr>
+<tr>
+<td><strong>5. Real AWS acceptance</strong></td>
+<td>Sandbox-account suite in 8.5.</td>
+<td>The suite passes twice in a row. Selected upstream <code>TestAcc*</code> for touched resources pass.</td>
+</tr>
+<tr>
+<td><strong>6. Release</strong></td>
+<td>GoReleaser build and a private registry namespace such as <code>registry.terraform.io/&lt;ns&gt;/aws-idempotent</code>. Document the <code>required_providers</code> swap.</td>
+<td>Tagged <code>v6.64.0-idem.1</code>.</td>
+</tr>
+<tr>
+<td><strong>7. Follow-ups</strong></td>
+<td>Section 7 items, and a remote journal backend in DynamoDB or S3 for CI runners.</td>
+<td>Separate design doc.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="manual-sites-from-the-codemod-phase-3">MANUAL sites from the codemod (phase 3)<a class="headerlink" href="#manual-sites-from-the-codemod-phase-3" title="Permanent link">#</a></h3>
+<table>
+<thead>
+<tr>
+<th>Site</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>cloudformation/stack.go</code>, three sites</td>
+<td><code>requestToken</code> is also used to filter stack events. Change to <code>requestToken := idempotency.ResolveToken(ctx, &amp;input)</code>, a helper that runs B2's logic eagerly and returns the token.</td>
+</tr>
+<tr>
+<td><code>serverlessrepo/cloudformation_stack.go</code>, three sites</td>
+<td>Same as above.</td>
+</tr>
+<tr>
+<td><code>route53/delegation_set.go</code>, <code>route53/health_check.go</code></td>
+<td><code>callerRef</code> is reused. Use the same helper.</td>
+</tr>
+<tr>
+<td><code>athena/named_query.go</code> <code>NamedQueryId</code>, <code>cloudcontrol/resource.go</code> <code>RequestToken</code></td>
+<td>False positives, because these are real IDs. No change. <code>NameIsToken=false</code> or read-only handling already skips them at runtime.</td>
+</tr>
+<tr>
+<td><code>efs/file_system.go</code> <code>CreationToken</code></td>
+<td>Excluded. It is a user-visible attribute stored in state.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="implementation-status-2026-09-15">Implementation status (2026-09-15)<a class="headerlink" href="#implementation-status-2026-09-15" title="Permanent link">#</a></h2>
+<p>Phases 0-3 are implemented in this checkout, not just planned:</p>
+<ul>
+<li><strong>Phase 0</strong> — upstream v6.64.0 imported verbatim as the fork baseline (a
+  separate commit from every change below, so the diff is reviewable).</li>
+<li><strong>Phase 1</strong> — <code>internal/idempotency</code> and <code>internal/idempotency/journal</code>:
+  the SQLite journal (crash-safety proven with a real subprocess that is
+  SIGKILLed mid-claim, and with 8 real concurrent processes racing for one
+  key), the canonical hasher (fuzzed 7M+ executions, no panics), and the
+  token-format table, cross-checked against every operation's real Smithy
+  constraints.</li>
+<li><strong>Phase 2</strong> — the two aws-sdk-go-v2 middleware (<code>idempotency.Middleware</code>),
+  verified against real <code>ec2</code>/<code>ecs</code> clients hitting a fake HTTP endpoint:
+  the deterministic token reaches the wire instead of a random one, a
+  caller-supplied token passes through untouched, and the SDK's retry loop
+  reuses one token across every HTTP attempt.</li>
+<li><strong>Phase 3</strong> — provider integration:</li>
+<li><code>tools/codemod-tokens</code> applied to this checkout: 428 sites across 298
+    files rewritten from a random per-apply token to the <code>idempotency.AutoToken</code>
+    sentinel.</li>
+<li><code>internal/idempotency/server.go</code>'s <code>WrapProviderServer</code> (the gRPC
+    "wrapper A" from section 4.2) wired into <code>main.go</code>, promoting/releasing
+    journal entries around every <code>ApplyResourceChange</code> call. This is load
+    -bearing, not an optimization -- see its doc comment -- and is tested
+    with a fake <code>tfprotov5.ProviderServer</code>.</li>
+<li><code>internal/idempotency.Middleware</code> wired into every AWS client via
+    <code>internal/conns/config.go</code>, next to the existing <code>apicall.Middleware()</code>
+    registration.</li>
+<li><code>go build ./...</code> and <code>go vet ./...</code> succeed for the entire ~300-service
+    provider with all of the above in place.</li>
+<li>The 10 MANUAL codemod sites (table above) are <strong>not yet fixed</strong>: they
+    still use upstream's original random per-apply token, which is no
+    regression (identical to upstream behavior) but not yet improved.</li>
+<li><strong>Not yet implemented</strong>: the <code>idempotency {}</code> provider config block
+    (journal path/retention are environment-variable-only for now --
+    <code>TF_AWS_IDEMPOTENCY_JOURNAL</code>, <code>TF_AWS_IDEMPOTENCY_DISABLE</code>, see
+    <code>internal/idempotency/global.go</code>), the <code>journal</code> CLI subcommand, and GC
+    scheduling (<code>journal.Store.GC</code>/<code>Orphans</code> exist and are tested, but
+    nothing calls them yet).</li>
+<li><strong>Phases 4-6</strong> (crash-recovery against a real <code>terraform</code> CLI + AWS
+  emulator, real-AWS sandbox acceptance tests, packaging/release) are
+  <strong>not started</strong>. The journal-level crash recovery those phases would
+  exercise end-to-end is already proven at the unit level (see phase 1
+  above); what phase 4 adds is proof through the actual Terraform CLI and
+  provider RPC boundary, which no test in this checkout exercises yet.</li>
+</ul>
+<h2 id="7-known-limitations-state-these-in-the-readme">7. Known limitations (state these in the README)<a class="headerlink" href="#7-known-limitations-state-these-in-the-readme" title="Permanent link">#</a></h2>
+<ol>
+<li><strong>Most create APIs have no token.</strong> The provider calls 1124 create-like operations.
+   Only 340 of them accept a token.</li>
+<li><strong>Name-unique resources</strong> such as IAM roles, S3 buckets, SQS queues, and RDS instances fail on retry with "already exists" instead of duplicating. The user then imports them. That is annoying but safe.</li>
+<li><strong>Nameless resources</strong> still duplicate on crash. Examples are EC2 <code>CreateVpc</code>, <code>CreateSubnet</code>, <code>CreateInternetGateway</code>, <code>AllocateAddress</code>, and KMS <code>CreateKey</code>.</li>
+<li><strong>Follow-up:</strong> a tag-based adoption layer. Stamp a deterministic tag at create, and look it up before creating.</li>
+<li><strong>Delivered but not persisted.</strong> Terraform may receive the response and then be killed before it writes state.
+   The provider cannot see this. When state is persisted depends on the backend and timing.</li>
+<li><strong>Non-deterministic inputs.</strong> <code>name_prefix</code> generates a random name on each run, so the hash changes and there is no protection.
+   <strong>Follow-up:</strong> derive <code>create.PrefixedUniqueId</code> deterministically from resource type plus a config hash, behind a flag.</li>
+<li><strong>Token lifetime is service-defined.</strong> It is often around a day, and some services keep tokens longer.
+   Re-applying after the token expires behaves like upstream. Record the per-service lifetime in <code>SUPPORTED_APIS.md</code> as it is verified.</li>
+<li><strong>Local journal.</strong> CI runners with ephemeral disks get no protection until the remote backend lands.</li>
+</ol>
+<h2 id="8-test-plan">8. Test plan<a class="headerlink" href="#8-test-plan" title="Permanent link">#</a></h2>
+<h3 id="81-unit-tests-internalidempotency">8.1 Unit tests (<code>internal/idempotency</code>)<a class="headerlink" href="#81-unit-tests-internalidempotency" title="Permanent link">#</a></h3>
+<ul>
+<li><strong>Canonical hasher.</strong></li>
+<li>Golden files for representative inputs: <code>RunInstancesInput</code> with nested block devices, EKS <code>CreateClusterInput</code>, and a map-heavy input.</li>
+<li>A property test that encodes the same value twice and gets equal bytes, across shuffled map insertion orders.</li>
+<li>A test that <code>nil</code> and empty values hash the same, and that the token field never affects the hash.</li>
+<li>A fuzz test (<code>go test -fuzz</code>) that feeds random structs and expects no panic.</li>
+<li><strong>Formats.</strong> For every row in the op table, generate a token and check it against the member's length and pattern. The pattern is copied into the generated table and checked with Go <code>regexp</code>. This catches bad <code>FormatUUID</code>, <code>FormatHex32</code>, or <code>FormatHex64</code> choices across all 1609 operations.</li>
+<li><strong>Journal state machine.</strong></li>
+<li>A table-driven test of every transition.</li>
+<li>A test that claiming picks the lowest pending sequence number.</li>
+<li>A test that entries claimed by a live process are skipped, and entries from a dead PID are reclaimed.</li>
+<li>Garbage collection and orphan reporting.</li>
+<li>Salt is created once and is stable.</li>
+<li><strong>Multi-process journal.</strong> Spawn N helper processes with <code>os/exec</code> of the test binary. They issue M identical claims at once. Expect exactly N×M distinct tokens, no errors, and no duplicate <code>(key, seq)</code>.</li>
+<li><strong>Crash durability.</strong> Kill a helper process with SIGKILL between <code>ClaimOrCreate</code> and the send. The entry must exist and be <code>pending</code> on reopen.</li>
+</ul>
+<h3 id="82-sdk-middleware-integration-no-aws-no-terraform">8.2 SDK middleware integration (no AWS, no Terraform)<a class="headerlink" href="#82-sdk-middleware-integration-no-aws-no-terraform" title="Permanent link">#</a></h3>
+<ul>
+<li><strong>Fake endpoint.</strong> An <code>httptest.Server</code> implements token semantics: it stores token → response, replays the stored response for a known token, and returns <code>IdempotentParameterMismatch</code> when the same token arrives with a different body.
+  Build real clients with <code>ec2.NewFromConfig(cfg)</code> and <code>BaseEndpoint</code> set to the server. This follows the upstream <code>apicall_e2e_test.go</code> pattern.</li>
+<li><strong>Cases.</strong></li>
+<li>An empty token becomes deterministic, and the SDK auto-fill is not used.</li>
+<li>A caller-set token passes through unchanged.</li>
+<li>The <code>AutoToken</code> sentinel is replaced.</li>
+<li>The same token is sent on every SDK retry. Force this with 500 responses.</li>
+<li>Tier 2, where the SDK has no auto-fill, still gets a token. ECS <code>CreateService</code> is the example.</li>
+<li>ACM gets 32 hex characters.</li>
+<li>The region is part of the scope.</li>
+<li><code>NameIsToken=false</code> members keep SDK behavior.</li>
+<li><strong>Middleware order guard.</strong> A test fails if <code>OperationIdempotencyTokenAutoFill</code> or <code>OperationSerializer</code> IDs change in a new SDK release.</li>
+</ul>
+<h3 id="83-codemod-tests-toolscodemod-tokens">8.3 Codemod tests (<code>tools/codemod-tokens</code>)<a class="headerlink" href="#83-codemod-tests-toolscodemod-tokens" title="Permanent link">#</a></h3>
+<ul>
+<li><strong>Golden tests.</strong> <code>testdata/in/*.go</code> and <code>testdata/out/*.go</code> cover struct literals, field assignment, single-use variables, reused variables marked MANUAL, excludes, and import add and remove.</li>
+<li><strong>Idempotence.</strong> Running the codemod twice gives no diff on the second run.</li>
+<li><strong>Upstream gate in CI.</strong></li>
+<li>After each sync, run the codemod.</li>
+<li>Require that <code>go build ./...</code> succeeds.</li>
+<li>Require that <code>rg 'Token.*create\.UniqueId|Token.*sdkid\.'</code> finds nothing outside the reviewed MANUAL list.</li>
+<li>Require that <code>REWRITE</code>/<code>MANUAL</code> counts changed only in reviewed ways. Commit the report.</li>
+</ul>
+<h3 id="84-crash-recovery-end-to-end-local-hermetic-runs-in-ci">8.4 Crash-recovery end-to-end (local, hermetic, runs in CI)<a class="headerlink" href="#84-crash-recovery-end-to-end-local-hermetic-runs-in-ci" title="Permanent link">#</a></h3>
+<p><strong>Harness.</strong> A Go test drives the real <code>terraform</code> CLI with a <code>dev_overrides</code> CLI config pointing at the built provider binary.
+It sets <code>AWS_ENDPOINT_URL_*</code> to a local AWS emulator.</p>
+<ul>
+<li><strong>Emulator choice.</strong> Before choosing between LocalStack and Moto, check how each handles <code>ClientToken</code> for the operations under test. A proxy in front of the emulator can supply token semantics where the emulator lacks them.</li>
+<li><strong>Unit-level alternative.</strong> The 8.2 fake endpoint can be extended to the few operations used here.</li>
+</ul>
+<p><strong>Fault injection.</strong> It is compiled in only with the build tag <code>idemfault</code>. It is set with <code>TF_AWS_IDEMPOTENCY_FAULT=&lt;service&gt;:&lt;Operation&gt;:&lt;point&gt;</code>.</p>
+<table>
+<thead>
+<tr>
+<th>Point</th>
+<th>What happens</th>
+<th>What it simulates</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>after-journal</code></td>
+<td>SIGKILL self after the fsync, before the send.</td>
+<td>Crash before the request left.</td>
+</tr>
+<tr>
+<td><code>after-send</code></td>
+<td>SIGKILL self in Deserialize, before the response is read. The request has reached the server.</td>
+<td><strong>The target scenario.</strong></td>
+</tr>
+<tr>
+<td><code>after-response</code></td>
+<td>SIGKILL self after <code>MarkResponded</code>, before the handler returns.</td>
+<td>Response received, not delivered.</td>
+</tr>
+<tr>
+<td>(external)</td>
+<td>The harness sends SIGKILL to the <code>terraform</code> process at a random delay.</td>
+<td>A real user or CI kill.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Crash matrix.</strong> Each row runs apply, crash, apply, then asserts the emulator contents. Assertions count instances or resources by a unique test tag, check state has exactly the expected addresses, and check that the final <code>terraform plan</code> shows no changes.</p>
+<table>
+<thead>
+<tr>
+<th>Config</th>
+<th>Fault</th>
+<th>Expected after re-apply</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1 <code>aws_instance</code></td>
+<td><code>after-send</code></td>
+<td>1 instance, state has 1</td>
+</tr>
+<tr>
+<td>1 <code>aws_instance</code></td>
+<td><code>after-response</code></td>
+<td>1 instance</td>
+</tr>
+<tr>
+<td><code>aws_instance</code> <code>count = 3</code>, identical</td>
+<td><code>after-send</code> on the second call</td>
+<td>3 instances</td>
+</tr>
+<tr>
+<td><code>aws_ebs_volume</code> and <code>aws_route_table</code></td>
+<td>external SIGKILL at random time, repeated 50 times</td>
+<td>exactly 1 of each</td>
+</tr>
+<tr>
+<td><code>aws_ecs_service</code> (Tier 2)</td>
+<td><code>after-send</code></td>
+<td>1 service</td>
+</tr>
+<tr>
+<td>Destroy, then apply</td>
+<td>none</td>
+<td>new resource ID, old one gone</td>
+</tr>
+<tr>
+<td>Update A, B, A (<code>aws_instance</code> credit spec)</td>
+<td>none</td>
+<td>final value A on the resource</td>
+</tr>
+<tr>
+<td>Edit config after crash</td>
+<td><code>after-send</code></td>
+<td>2 resources, and <code>journal orphans</code> lists 1</td>
+</tr>
+<tr>
+<td><code>enabled = false</code></td>
+<td><code>after-send</code></td>
+<td>2 resources, the upstream baseline, proving the test detects duplicates</td>
+</tr>
+</tbody>
+</table>
+<p>The <code>enabled = false</code> row is the control. It must fail the "exactly one" assertion, which proves the harness can observe duplicates.</p>
+<h3 id="85-real-aws-acceptance-sandbox-account-manual-or-nightly">8.5 Real AWS acceptance (sandbox account, manual or nightly)<a class="headerlink" href="#85-real-aws-acceptance-sandbox-account-manual-or-nightly" title="Permanent link">#</a></h3>
+<ul>
+<li><strong>Resources.</strong> Pick cheap nameless resources where duplicates are really observable: <code>aws_instance</code> (t4g.nano), <code>aws_ebs_volume</code> (1 GiB), <code>aws_route_table</code>, <code>aws_network_acl</code>, <code>aws_launch_template</code>, <code>aws_ecs_service</code> on Fargate with <code>desired_count = 0</code>, and <code>aws_route53_health_check</code>.</li>
+<li><strong>Tests.</strong> Run the 8.4 matrix rows for <code>after-send</code> and external SIGKILL. Assertions query AWS directly with <code>DescribeInstances</code> and friends, filtered by a run-unique tag.</li>
+<li><strong>Cleanup.</strong> A tag-based sweeper runs after each test, whatever the outcome.</li>
+<li><strong>Upstream regression.</strong> Run the upstream <code>TestAcc</code> tests for resources whose files the codemod touched, for example <code>TestAccEC2Instance_basic</code>, <code>TestAccEC2EBSVolume_basic</code>, <code>TestAccACMCertificate_emailValidation</code>, and <code>TestAccEKSCluster_basic</code> (nightly only, because of cost). With <code>enabled = true</code>, results must match upstream.</li>
+</ul>
+<h3 id="86-upgrade-safety">8.6 Upgrade safety<a class="headerlink" href="#86-upgrade-safety" title="Permanent link">#</a></h3>
+<ul>
+<li><strong>Scheduled CI job.</strong> It runs weekly. It fetches the latest provider tag and the matching SDK models, regenerates <code>ops.json</code>, the Go table, and the docs, then runs the codemod and all of 8.1 through 8.4.</li>
+<li><strong>On success</strong>, it opens a PR with the diff, including the supported-API diff.</li>
+<li><strong>On failure</strong>, the PR is opened as a draft. Typical causes are a new MANUAL site or changed middleware IDs.</li>
+</ul>
+<h2 id="9-tooling-already-in-this-repo">9. Tooling already in this repo<a class="headerlink" href="#9-tooling-already-in-this-repo" title="Permanent link">#</a></h2>
+<div class="highlight"><pre><span></span><code><span class="c1"># 1. Fetch inputs</span>
+git<span class="w"> </span>clone<span class="w"> </span>--depth<span class="w"> </span><span class="m">1</span><span class="w"> </span>--filter<span class="o">=</span>blob:none<span class="w"> </span>--sparse<span class="w"> </span>https://github.com/aws/aws-sdk-go-v2.git<span class="w"> </span>sdk
+<span class="o">(</span><span class="nb">cd</span><span class="w"> </span>sdk<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>git<span class="w"> </span>sparse-checkout<span class="w"> </span><span class="nb">set</span><span class="w"> </span>codegen/sdk-codegen/aws-models<span class="o">)</span>
+git<span class="w"> </span>clone<span class="w"> </span>--depth<span class="w"> </span><span class="m">1</span><span class="w"> </span>--branch<span class="w"> </span>v6.64.0<span class="w"> </span>https://github.com/hashicorp/terraform-provider-aws.git<span class="w"> </span>upstream
+
+<span class="c1"># 2. Generate the op table, docs, and Go map</span>
+<span class="nv">M</span><span class="o">=</span>sdk/codegen/sdk-codegen/aws-models
+python3<span class="w"> </span>tools/gen-idempotent-ops/gen.py<span class="w"> </span><span class="nv">$M</span><span class="w"> </span>--provider-dir<span class="o">=</span>upstream<span class="w"> </span>&gt;<span class="w"> </span>data/ops.json
+python3<span class="w"> </span>tools/gen-idempotent-ops/gen.py<span class="w"> </span><span class="nv">$M</span><span class="w"> </span>--provider-dir<span class="o">=</span>upstream<span class="w"> </span>--markdown<span class="w"> </span>&gt;<span class="w"> </span>docs/SUPPORTED_APIS.md
+python3<span class="w"> </span>tools/gen-idempotent-ops/gen.py<span class="w"> </span><span class="nv">$M</span><span class="w"> </span>--go<span class="w"> </span><span class="p">|</span><span class="w"> </span>gofmt<span class="w"> </span>&gt;<span class="w"> </span>upstream/internal/idempotency/zz_ops_gen.go
+
+<span class="c1"># 3. Rewrite random tokens (dry run prints a TSV report; -w writes)</span>
+<span class="o">(</span><span class="nb">cd</span><span class="w"> </span>tools<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>go<span class="w"> </span>run<span class="w"> </span>./codemod-tokens<span class="w"> </span>-provider<span class="w"> </span>../upstream<span class="w"> </span>-ops<span class="w"> </span>../data/ops.json<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>-exclude<span class="w"> </span>codemod-tokens/exclude.txt<span class="w"> </span>-w<span class="o">)</span><span class="w"> </span>&gt;<span class="w"> </span>codemod-report.tsv
+</code></pre></div>
+<p>On v6.64.0, the dry run reports:</p>
+<div class="highlight"><pre><span></span><code>REWRITE=428 MANUAL=10 EXCLUDED=1   (298 files changed, gofmt-clean; a second run reports REWRITE=0)
+</code></pre></div>
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var tab,labels=set.querySelector(".tabbed-labels");for(tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      IBM Corp.
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.instant", "content.tabs.link", "content.code.copy"], "search": "../assets/javascripts/workers/search.e5c33ebb.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.51d95adb.min.js"></script>
+      
+    
+  </body>
+</html>
