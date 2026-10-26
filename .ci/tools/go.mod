@@ -1,6 +1,6 @@
 module github.com/hashicorp/terraform-provider-aws/tools
 
-go 1.26.6
+go 1.26.9
 
 require (
 	github.com/YakDriver/copyplop v0.10.0
@@ -8,7 +8,7 @@ require (
 	github.com/client9/misspell v0.3.4
 	github.com/golangci/golangci-lint/v2 v2.12.2
 	github.com/hashicorp/go-changelog v0.0.0-20250127101332-effe3832fb0b
-	github.com/katbyte/tctest v1.3.3
+	github.com/katbyte/tctest v1.3.5
 	github.com/katbyte/terrafmt v1.0.1
 	github.com/pavius/impi v0.0.3
 	github.com/rhysd/actionlint v1.7.12
@@ -377,13 +377,13 @@ require (
 	go.yaml.in/yaml/v4 v4.0.0-rc.3 // indirect
 	golang.org/x/crypto v0.56.0 // indirect
 	golang.org/x/exp/typeparams v0.0.0-20260209203927-2842357ff358 // indirect
-	golang.org/x/mod v0.40.0 // indirect
+	golang.org/x/mod v0.41.0 // indirect
 	golang.org/x/net v0.58.0 // indirect
-	golang.org/x/oauth2 v0.36.0 // indirect
-	golang.org/x/sync v0.22.0 // indirect
+	golang.org/x/oauth2 v0.37.0 // indirect
+	golang.org/x/sync v0.23.0 // indirect
 	golang.org/x/sys v0.47.0 // indirect
 	golang.org/x/term v0.45.0 // indirect
-	golang.org/x/text v0.41.0 // indirect
+	golang.org/x/text v0.42.0 // indirect
 	golang.org/x/time v0.15.0 // indirect
 	google.golang.org/api v0.283.0 // indirect
 	google.golang.org/genproto v0.0.0-20260319201613-d00831a3d3e7 // indirect
